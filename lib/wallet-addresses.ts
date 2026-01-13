@@ -1,0 +1,55 @@
+// Wallet addresses for deposits - these should be replaced with your actual wallet addresses
+export const walletAddresses = {
+  BTC: {
+    address: "bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh",
+    name: "Bitcoin",
+    symbol: "BTC",
+    network: "Bitcoin Network",
+    icon: "bitcoin",
+    color: "orange",
+    minDeposit: 0.0001,
+    confirmations: 3,
+  },
+  USDC: {
+    address: "0x742d35Cc6634C0532925a3b844Bc9e7595f1e0e3",
+    name: "USD Coin",
+    symbol: "USDC",
+    network: "ERC-20 (Ethereum)",
+    icon: "usdc",
+    color: "blue",
+    minDeposit: 10,
+    confirmations: 12,
+  },
+  USDT: {
+    address: "TJYeasTPa6gpEwxEqQNruP7Kq9WeBz82Q1",
+    name: "Tether",
+    symbol: "USDT",
+    network: "TRC-20 (Tron)",
+    icon: "usdt",
+    color: "emerald",
+    minDeposit: 10,
+    confirmations: 20,
+  },
+  TON: {
+    address: "EQCvxJy4eG8hyHBFsZ7DUdZnQwzrH-8RkN-K2ixqPxxkqhT3",
+    name: "Toncoin",
+    symbol: "TON",
+    network: "TON Network",
+    icon: "ton",
+    color: "sky",
+    minDeposit: 1,
+    confirmations: 1,
+  },
+  LTC: {
+    address: "ltc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh",
+    name: "Litecoin",
+    symbol: "LTC",
+    network: "Litecoin Network",
+    icon: "litecoin",
+    color: "slate",
+    minDeposit: 0.01,
+    confirmations: 6,
+  },
+}
+
+export type CryptoKey = keyof typeof walletAddresses
