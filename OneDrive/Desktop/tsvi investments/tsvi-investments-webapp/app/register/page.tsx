@@ -42,14 +42,27 @@ export default function RegisterPage() {
       setEmailSent(true)
     } catch (err: unknown) {
       const firebaseError = err as { code?: string; message?: string }
-      console.error("Registration error:", firebaseError)
+      const currentDomain = typeof window !== "undefined" ? window.location.hostname : "unknown"
+      
+      console.error("Registration error:", {
+        code: firebaseError.code,
+        message: firebaseError.message,
+        domain: currentDomain,
+        fullError: firebaseError,
+        timestamp: new Date().toISOString()
+      })
       
       if (firebaseError.code === "auth/invalid-email") {
         setError("Please enter a valid email address.")
       } else if (firebaseError.code === "auth/missing-email") {
         setError("Please enter an email address.")
       } else if (firebaseError.code === "auth/unauthorized-domain") {
-        setError("This domain is not authorized for authentication. Please contact support.")
+        setError(`This domain (${currentDomain}) is not authorized for authentication. Please contact support or try again later.`)
+        console.error("⚠️ DOMAIN NOT AUTHORIZED:", {
+          currentDomain,
+          action: "Add this domain to Firebase Console → Authentication → Settings → Authorized domains",
+          firebaseConsole: "https://console.firebase.google.com/project/tsvi-investments/authentication/settings/authorizeddomains"
+        })
       } else if (firebaseError.code === "auth/operation-not-allowed") {
         setError("Email/password accounts are not enabled. Please contact support.")
       } else {

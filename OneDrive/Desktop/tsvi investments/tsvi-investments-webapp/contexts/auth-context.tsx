@@ -104,7 +104,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
     } catch (error: unknown) {
       const firebaseError = error as { code?: string; message?: string }
-      console.error("Error sending sign-in link:", firebaseError.code, firebaseError.message)
+      console.error("Error sending sign-in link:", {
+        code: firebaseError.code,
+        message: firebaseError.message,
+        currentOrigin: currentOrigin,
+        email: email,
+        timestamp: new Date().toISOString()
+      })
       throw error
     }
   }

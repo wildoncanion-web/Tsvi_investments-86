@@ -53,8 +53,28 @@ export default function AuthCallbackPage() {
           }, 1500)
         } catch (err: unknown) {
           const firebaseError = err as { code?: string; message?: string }
+          const currentDomain = typeof window !== "undefined" ? window.location.hostname : "unknown"
+          
+          console.error("Auth callback error:", {
+            code: firebaseError.code,
+            message: firebaseError.message,
+            domain: currentDomain,
+            storedEmail: storedEmail,
+            fullError: firebaseError,
+            timestamp: new Date().toISOString()
+          })
+          
+          if (firebaseError.code === "auth/invalid-action-code") {
+            setError("This sign-in link has expired or is invalid. Please request a new one.")
+          } else if (firebaseError.code === "auth/expired-action-code") {
+            setError("This sign-in link has expired. Please request a new one.")
+          } else if (firebaseError.code === "auth/invalid-email") {
+            setError("Invalid email address. Please try again.")
+          } else {
+            setError(firebaseError.message || "Failed to complete sign-in. Please try again.")
+          }
+          
           setStatus("error")
-          setError(firebaseError.message || "Failed to complete sign-in. Please try again.")
         }
       } else {
         // Email not found in localStorage - user needs to enter it manually
@@ -79,7 +99,26 @@ export default function AuthCallbackPage() {
       }, 1500)
     } catch (err: unknown) {
       const firebaseError = err as { code?: string; message?: string }
-      setError(firebaseError.message || "Failed to complete sign-in. Please check your email and try again.")
+      const currentDomain = typeof window !== "undefined" ? window.location.hostname : "unknown"
+      
+      console.error("Email submit error:", {
+        code: firebaseError.code,
+        message: firebaseError.message,
+        domain: currentDomain,
+        email: email,
+        fullError: firebaseError,
+        timestamp: new Date().toISOString()
+      })
+      
+      if (firebaseError.code === "auth/invalid-action-code") {
+        setError("This sign-in link has expired or is invalid. Please request a new one.")
+      } else if (firebaseError.code === "auth/expired-action-code") {
+        setError("This sign-in link has expired. Please request a new one.")
+      } else if (firebaseError.code === "auth/invalid-email") {
+        setError("Invalid email address. Please check and try again.")
+      } else {
+        setError(firebaseError.message || "Failed to complete sign-in. Please check your email and try again.")
+      }
     } finally {
       setLoading(false)
     }
