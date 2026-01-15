@@ -38,6 +38,7 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode
 }>) {
+  // Root layout with authentication, analytics, and chat support
   return (
     <html lang="en">
       <body className={`font-sans antialiased`}>
