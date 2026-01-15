@@ -2,6 +2,7 @@
 
 import Link from "next/link"
 import { useAuth } from "@/contexts/auth-context"
+import { isAdmin } from "@/lib/admin"
 import { Button } from "@/components/ui/button"
 import { Menu, X } from "lucide-react"
 import { useState } from "react"
@@ -9,6 +10,7 @@ import { useState } from "react"
 export function Navbar() {
   const { user, logout } = useAuth()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const userIsAdmin = user && isAdmin(user.email)
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 border-b border-border bg-background/80 backdrop-blur-xl">
@@ -42,6 +44,13 @@ export function Navbar() {
                     Dashboard
                   </Button>
                 </Link>
+                {userIsAdmin && (
+                  <Link href="/admin">
+                    <Button variant="ghost" size="sm">
+                      Admin
+                    </Button>
+                  </Link>
+                )}
                 <Button variant="outline" size="sm" onClick={() => logout()}>
                   Sign Out
                 </Button>
@@ -86,6 +95,13 @@ export function Navbar() {
                       Dashboard
                     </Button>
                   </Link>
+                  {userIsAdmin && (
+                    <Link href="/admin" onClick={() => setMobileMenuOpen(false)}>
+                      <Button variant="ghost" size="sm" className="w-full justify-start">
+                        Admin
+                      </Button>
+                    </Link>
+                  )}
                   <Button
                     variant="outline"
                     size="sm"

@@ -23,14 +23,26 @@ export default function AuthCallbackPage() {
     const handleCallback = async () => {
       if (typeof window === "undefined") return
 
+      // Check if this is a valid email link - works on all devices
       if (!isEmailLink(window.location.href)) {
         setStatus("error")
         setError("Invalid or expired sign-in link. Please request a new one.")
         return
       }
 
-      const storedEmail = window.localStorage.getItem("emailForSignIn")
-      const storedDisplayName = window.localStorage.getItem("displayNameForSignIn")
+      // Try to get stored email from localStorage (works on all devices)
+      let storedEmail: string | null = null
+      let storedDisplayName: string | null = null
+
+      try {
+        if (window.localStorage) {
+          storedEmail = window.localStorage.getItem("emailForSignIn")
+          storedDisplayName = window.localStorage.getItem("displayNameForSignIn")
+        }
+      } catch (storageError) {
+        // localStorage might not be available (e.g., private browsing)
+        console.warn("Could not access localStorage:", storageError)
+      }
 
       if (storedEmail) {
         try {
@@ -45,6 +57,8 @@ export default function AuthCallbackPage() {
           setError(firebaseError.message || "Failed to complete sign-in. Please try again.")
         }
       } else {
+        // Email not found in localStorage - user needs to enter it manually
+        // This can happen on mobile if email link opened in different browser/device
         setStatus("needEmail")
       }
     }
@@ -112,12 +126,18 @@ export default function AuthCallbackPage() {
                   <Input
                     id="email"
                     type="email"
+                    inputMode="email"
+                    autoComplete="email"
+                    autoCapitalize="none"
                     placeholder="name@example.com"
                     value={email}
-                    onChange={(e) => setEmail(e.target.value)}
+                    onChange={(e) => setEmail(e.target.value.trim().toLowerCase())}
                     required
                     className="bg-input border-border text-foreground placeholder:text-muted-foreground"
                   />
+                  <p className="text-xs text-muted-foreground">
+                    Enter the email address where you received the sign-in link
+                  </p>
                 </div>
 
                 <Button type="submit" className="w-full" disabled={loading}>

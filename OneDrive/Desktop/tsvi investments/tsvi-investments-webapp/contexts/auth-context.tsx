@@ -67,20 +67,39 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [])
 
   const sendSignInLink = async (email: string, displayName?: string) => {
-    const currentOrigin = typeof window !== "undefined" ? window.location.origin : "http://localhost:3000"
+    // Get current origin - works on all devices (mobile, desktop, tablet)
+    const currentOrigin =
+      typeof window !== "undefined" && window.location.origin
+        ? window.location.origin
+        : "https://www.tsviinvestments.com"
 
     const actionCodeSettings = {
       url: `${currentOrigin}/auth/callback`,
       handleCodeInApp: true,
+      // Ensure it works on mobile browsers
+      iOS: {
+        bundleId: undefined, // Not needed for web
+      },
+      android: {
+        packageName: undefined, // Not needed for web
+        installApp: false,
+        minimumVersion: undefined,
+      },
     }
 
     try {
       await sendSignInLinkToEmail(auth, email, actionCodeSettings)
 
-      if (typeof window !== "undefined") {
-        window.localStorage.setItem("emailForSignIn", email)
-        if (displayName) {
-          window.localStorage.setItem("displayNameForSignIn", displayName)
+      // Store email for verification - works on all devices
+      if (typeof window !== "undefined" && window.localStorage) {
+        try {
+          window.localStorage.setItem("emailForSignIn", email)
+          if (displayName) {
+            window.localStorage.setItem("displayNameForSignIn", displayName)
+          }
+        } catch (storageError) {
+          // Handle localStorage errors (e.g., private browsing mode)
+          console.warn("Could not save to localStorage:", storageError)
         }
       }
     } catch (error: unknown) {

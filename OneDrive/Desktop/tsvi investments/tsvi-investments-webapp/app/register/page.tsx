@@ -42,12 +42,18 @@ export default function RegisterPage() {
       setEmailSent(true)
     } catch (err: unknown) {
       const firebaseError = err as { code?: string; message?: string }
+      console.error("Registration error:", firebaseError)
+      
       if (firebaseError.code === "auth/invalid-email") {
         setError("Please enter a valid email address.")
       } else if (firebaseError.code === "auth/missing-email") {
         setError("Please enter an email address.")
+      } else if (firebaseError.code === "auth/unauthorized-domain") {
+        setError("This domain is not authorized for authentication. Please contact support.")
+      } else if (firebaseError.code === "auth/operation-not-allowed") {
+        setError("Email/password accounts are not enabled. Please contact support.")
       } else {
-        setError(firebaseError.message || "Failed to send sign-in link. Please try again.")
+        setError(firebaseError.message || `Failed to send sign-in link. Error: ${firebaseError.code || "Unknown error"}. Please try again or contact support.`)
       }
     } finally {
       setLoading(false)
@@ -118,6 +124,8 @@ export default function RegisterPage() {
               <Input
                 id="fullName"
                 type="text"
+                inputMode="text"
+                autoComplete="name"
                 placeholder="John Doe"
                 value={fullName}
                 onChange={(e) => setFullName(e.target.value)}
@@ -133,9 +141,12 @@ export default function RegisterPage() {
               <Input
                 id="email"
                 type="email"
+                inputMode="email"
+                autoComplete="email"
+                autoCapitalize="none"
                 placeholder="name@example.com"
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                onChange={(e) => setEmail(e.target.value.trim().toLowerCase())}
                 required
                 className="bg-input border-border text-foreground placeholder:text-muted-foreground"
               />
