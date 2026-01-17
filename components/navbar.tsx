@@ -3,11 +3,11 @@
 import Link from "next/link"
 import { useAuth } from "@/contexts/auth-context"
 import { Button } from "@/components/ui/button"
-import { Menu, X } from "lucide-react"
+import { Menu, X, Shield } from "lucide-react"
 import { useState } from "react"
 
 export function Navbar() {
-  const { user, logout } = useAuth()
+  const { user, isAdmin, logout } = useAuth()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
   return (
@@ -37,6 +37,14 @@ export function Navbar() {
           <div className="hidden items-center gap-4 md:flex">
             {user ? (
               <>
+                {isAdmin && (
+                  <Link href="/admin">
+                    <Button variant="ghost" size="sm" className="gap-2 text-amber-500 hover:text-amber-400">
+                      <Shield className="h-4 w-4" />
+                      Admin Panel
+                    </Button>
+                  </Link>
+                )}
                 <Link href="/dashboard">
                   <Button variant="ghost" size="sm">
                     Dashboard
@@ -81,6 +89,18 @@ export function Navbar() {
               </Link>
               {user ? (
                 <>
+                  {isAdmin && (
+                    <Link href="/admin" onClick={() => setMobileMenuOpen(false)}>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="w-full justify-start gap-2 text-amber-500 hover:text-amber-400"
+                      >
+                        <Shield className="h-4 w-4" />
+                        Admin Panel
+                      </Button>
+                    </Link>
+                  )}
                   <Link href="/dashboard" onClick={() => setMobileMenuOpen(false)}>
                     <Button variant="ghost" size="sm" className="w-full justify-start">
                       Dashboard

@@ -3,7 +3,17 @@
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
-import { LayoutDashboard, Users, ArrowDownToLine, Wallet, Settings, LogOut, TrendingUp, Shield } from "lucide-react"
+import {
+  LayoutDashboard,
+  Users,
+  ArrowDownToLine,
+  Wallet,
+  Settings,
+  LogOut,
+  TrendingUp,
+  Shield,
+  Gift,
+} from "lucide-react"
 import { useAuth } from "@/contexts/auth-context"
 import { useRouter } from "next/navigation"
 
@@ -11,6 +21,7 @@ const sidebarLinks = [
   { href: "/admin", label: "Dashboard", icon: LayoutDashboard },
   { href: "/admin/users", label: "Users", icon: Users },
   { href: "/admin/deposits", label: "Deposits", icon: ArrowDownToLine },
+  { href: "/admin/bonuses", label: "Bonuses", icon: Gift },
   { href: "/admin/wallets", label: "Wallets", icon: Wallet },
   { href: "/admin/investments", label: "Investments", icon: TrendingUp },
   { href: "/admin/settings", label: "Settings", icon: Settings },
