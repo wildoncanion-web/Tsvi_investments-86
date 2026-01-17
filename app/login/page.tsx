@@ -1,7 +1,6 @@
 "use client"
 
 import type React from "react"
-
 import Link from "next/link"
 import { useState } from "react"
 import { useRouter } from "next/navigation"
@@ -10,7 +9,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Eye, EyeOff, Loader2 } from "lucide-react"
+import { Loader2, Eye, EyeOff } from "lucide-react"
 
 export default function LoginPage() {
   const [email, setEmail] = useState("")
@@ -18,7 +17,7 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false)
   const [error, setError] = useState("")
   const [loading, setLoading] = useState(false)
-  const { signIn } = useAuth()
+  const { login } = useAuth()
   const router = useRouter()
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -27,10 +26,25 @@ export default function LoginPage() {
     setLoading(true)
 
     try {
-      await signIn(email, password)
+      await login(email, password)
       router.push("/dashboard")
-    } catch {
-      setError("Invalid email or password. Please try again.")
+    } catch (err: unknown) {
+      const firebaseError = err as { code?: string; message?: string }
+      console.log("[v0] Login error:", firebaseError.code, firebaseError.message)
+
+      if (firebaseError.code === "auth/user-not-found") {
+        setError("No account found with this email.")
+      } else if (firebaseError.code === "auth/wrong-password") {
+        setError("Incorrect password. Please try again.")
+      } else if (firebaseError.code === "auth/invalid-email") {
+        setError("Please enter a valid email address.")
+      } else if (firebaseError.code === "auth/invalid-credential") {
+        setError("Invalid email or password. Please try again.")
+      } else if (firebaseError.code === "auth/too-many-requests") {
+        setError("Too many failed attempts. Please try again later.")
+      } else {
+        setError(firebaseError.message || "Failed to sign in. Please try again.")
+      }
     } finally {
       setLoading(false)
     }
@@ -53,7 +67,7 @@ export default function LoginPage() {
           </Link>
           <CardTitle className="text-2xl font-bold text-foreground">Welcome back</CardTitle>
           <CardDescription className="text-muted-foreground">
-            Sign in to access your investment portfolio
+            Sign in to access your investment dashboard
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -83,11 +97,11 @@ export default function LoginPage() {
                 <Input
                   id="password"
                   type={showPassword ? "text" : "password"}
-                  placeholder="Enter your password"
+                  placeholder="••••••••"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
-                  className="bg-input border-border pr-10 text-foreground placeholder:text-muted-foreground"
+                  className="bg-input border-border text-foreground placeholder:text-muted-foreground pr-10"
                 />
                 <button
                   type="button"

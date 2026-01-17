@@ -1,7 +1,6 @@
 "use client"
 
 import type React from "react"
-
 import Link from "next/link"
 import { useState } from "react"
 import { useRouter } from "next/navigation"
@@ -11,7 +10,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Checkbox } from "@/components/ui/checkbox"
-import { Eye, EyeOff, Loader2 } from "lucide-react"
+import { Loader2, Eye, EyeOff } from "lucide-react"
 
 export default function RegisterPage() {
   const [fullName, setFullName] = useState("")
@@ -22,20 +21,25 @@ export default function RegisterPage() {
   const [agreeTerms, setAgreeTerms] = useState(false)
   const [error, setError] = useState("")
   const [loading, setLoading] = useState(false)
-  const { signUp } = useAuth()
+  const { register } = useAuth()
   const router = useRouter()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError("")
 
-    if (password !== confirmPassword) {
-      setError("Passwords do not match")
+    if (!fullName.trim()) {
+      setError("Please enter your full name")
       return
     }
 
     if (password.length < 6) {
       setError("Password must be at least 6 characters")
+      return
+    }
+
+    if (password !== confirmPassword) {
+      setError("Passwords do not match")
       return
     }
 
@@ -47,10 +51,21 @@ export default function RegisterPage() {
     setLoading(true)
 
     try {
-      await signUp(email, password, fullName)
+      await register(email, password, fullName)
       router.push("/dashboard")
-    } catch {
-      setError("Failed to create account. Please try again.")
+    } catch (err: unknown) {
+      const firebaseError = err as { code?: string; message?: string }
+      console.log("[v0] Registration error:", firebaseError.code, firebaseError.message)
+
+      if (firebaseError.code === "auth/email-already-in-use") {
+        setError("An account with this email already exists.")
+      } else if (firebaseError.code === "auth/invalid-email") {
+        setError("Please enter a valid email address.")
+      } else if (firebaseError.code === "auth/weak-password") {
+        setError("Password is too weak. Please use at least 6 characters.")
+      } else {
+        setError(firebaseError.message || "Failed to create account. Please try again.")
+      }
     } finally {
       setLoading(false)
     }
@@ -116,11 +131,11 @@ export default function RegisterPage() {
                 <Input
                   id="password"
                   type={showPassword ? "text" : "password"}
-                  placeholder="Create a password"
+                  placeholder="••••••••"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
-                  className="bg-input border-border pr-10 text-foreground placeholder:text-muted-foreground"
+                  className="bg-input border-border text-foreground placeholder:text-muted-foreground pr-10"
                 />
                 <button
                   type="button"
@@ -138,8 +153,8 @@ export default function RegisterPage() {
               </Label>
               <Input
                 id="confirmPassword"
-                type="password"
-                placeholder="Confirm your password"
+                type={showPassword ? "text" : "password"}
+                placeholder="••••••••"
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 required
