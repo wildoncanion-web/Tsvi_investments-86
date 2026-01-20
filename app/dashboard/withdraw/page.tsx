@@ -35,7 +35,7 @@ interface WithdrawalRequest {
 }
 
 export default function WithdrawPage() {
-  const { user, userProfile, loading } = useAuth()
+  const { user, userProfile, loading, refreshProfile } = useAuth()
   const router = useRouter()
   const [selectedCrypto, setSelectedCrypto] = useState("")
   const [amount, setAmount] = useState("")
@@ -98,13 +98,18 @@ export default function WithdrawPage() {
       return
     }
 
-    const availableBalance = getAvailableBalance(selectedCrypto)
+    setIsSubmitting(true)
+
+    // Refresh profile to get latest balance from admin edits
+    const freshProfile = await refreshProfile()
+    const currentHoldings = freshProfile?.holdings || userProfile?.holdings
+    const availableBalance = currentHoldings?.[selectedCrypto as keyof typeof currentHoldings] || 0
+    
     if (Number(amount) > availableBalance) {
       setError(`Insufficient balance. You only have ${availableBalance} ${selectedCrypto} available.`)
+      setIsSubmitting(false)
       return
     }
-
-    setIsSubmitting(true)
 
     try {
       const db = getFirebaseDb()
@@ -183,13 +188,16 @@ export default function WithdrawPage() {
         otpVerifiedAt: Timestamp.now(),
       })
 
-      const newHoldings = { ...userProfile!.holdings }
+      // Refresh profile to get latest balance before deducting
+      const freshProfile = await refreshProfile()
+      const currentProfile = freshProfile || userProfile!
+      const newHoldings = { ...currentProfile.holdings }
       newHoldings[selectedCrypto as keyof typeof newHoldings] -= Number(amount)
       
       await updateDoc(doc(db, "users", user!.uid), {
         holdings: newHoldings,
-        totalBalance: (userProfile!.totalBalance || 0) - Number(amount),
-        availableBalance: (userProfile!.availableBalance || 0) - Number(amount),
+        totalBalance: (currentProfile.totalBalance || 0) - Number(amount),
+        availableBalance: (currentProfile.availableBalance || 0) - Number(amount),
       })
 
       await addDoc(collection(db, "transactions"), {

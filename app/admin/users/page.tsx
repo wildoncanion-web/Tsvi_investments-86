@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog"
 import { Label } from "@/components/ui/label"
-import { Edit, Trash2, Search, DollarSign, Gift, ArrowDownToLine, CreditCard, Wallet } from "lucide-react"
+import { Edit, Trash2, Search, DollarSign, Gift, ArrowDownToLine, CreditCard, Wallet, TrendingUp } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
@@ -39,7 +39,7 @@ export default function AdminUsersPage() {
   const [users, setUsers] = useState<UserData[]>([])
   const [searchTerm, setSearchTerm] = useState("")
   const [editingUser, setEditingUser] = useState<UserData | null>(null)
-  const [actionType, setActionType] = useState<"edit" | "deposit" | "bonus" | "credit">("edit")
+  const [actionType, setActionType] = useState<"edit" | "deposit" | "bonus" | "credit" | "profit">("edit")
   const [actionAmount, setActionAmount] = useState("")
   const [actionCrypto, setActionCrypto] = useState("USDT")
   const [actionNote, setActionNote] = useState("")
@@ -194,6 +194,28 @@ export default function AdminUsersPage() {
         description: actionNote || "Admin credit",
         createdAt: Timestamp.now(),
       })
+    } else if (actionType === "profit") {
+      // Add profit and update holdings so user can withdraw
+      const newHoldings = { ...editingUser.holdings }
+      newHoldings[actionCrypto as keyof typeof newHoldings] =
+        (newHoldings[actionCrypto as keyof typeof newHoldings] || 0) + amount
+
+      await updateDoc(doc(db, "users", editingUser.uid), {
+        profit: (editingUser.profit || 0) + amount,
+        totalBalance: (editingUser.totalBalance || 0) + amount,
+        availableBalance: (editingUser.availableBalance || 0) + amount,
+        holdings: newHoldings,
+      })
+
+      await addDoc(collection(db, "transactions"), {
+        userId: editingUser.uid,
+        userEmail: editingUser.email,
+        type: "profit",
+        amount: amount,
+        crypto: actionCrypto,
+        description: actionNote || "Investment profit",
+        createdAt: Timestamp.now(),
+      })
     }
 
     setDialogOpen(false)
@@ -318,6 +340,15 @@ export default function AdminUsersPage() {
                       <Button
                         variant="ghost"
                         size="icon"
+                        className="text-purple-400 hover:text-purple-300 hover:bg-purple-500/10"
+                        onClick={() => handleQuickAction(user, "profit")}
+                        title="Add Profit"
+                      >
+                        <TrendingUp className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="icon"
                         className="text-zinc-400 hover:text-white"
                         onClick={() => handleEdit(user)}
                         title="Edit User"
@@ -357,13 +388,16 @@ export default function AdminUsersPage() {
               {actionType === "deposit" && <ArrowDownToLine className="h-5 w-5 text-emerald-500" />}
               {actionType === "bonus" && <Gift className="h-5 w-5 text-amber-500" />}
               {actionType === "credit" && <CreditCard className="h-5 w-5 text-sky-500" />}
+              {actionType === "profit" && <TrendingUp className="h-5 w-5 text-purple-500" />}
               {actionType === "edit"
                 ? `Edit User: ${editingUser?.email}`
                 : actionType === "deposit"
                   ? `Add Deposit for ${editingUser?.displayName}`
                   : actionType === "bonus"
                     ? `Add Bonus for ${editingUser?.displayName}`
-                    : `Add Credit for ${editingUser?.displayName}`}
+                    : actionType === "profit"
+                      ? `Add Profit for ${editingUser?.displayName}`
+                      : `Add Credit for ${editingUser?.displayName}`}
             </DialogTitle>
             <DialogDescription className="text-zinc-500">
               {actionType === "edit"
@@ -372,7 +406,9 @@ export default function AdminUsersPage() {
                   ? "Add a deposit to the user's account"
                   : actionType === "bonus"
                     ? "Add a bonus to the user's account"
-                    : "Add credits to the user's account"}
+                    : actionType === "profit"
+                      ? "Add investment profit to the user's account (withdrawable)"
+                      : "Add credits to the user's account"}
             </DialogDescription>
           </DialogHeader>
 

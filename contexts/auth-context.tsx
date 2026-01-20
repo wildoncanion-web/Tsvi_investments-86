@@ -43,6 +43,7 @@ interface AuthContextType {
   completeSignIn: (email: string, displayName?: string) => Promise<void>
   logout: () => Promise<void>
   isEmailLink: (url: string) => boolean
+  refreshProfile: () => Promise<UserProfile | null>
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
@@ -186,6 +187,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUserProfile(null)
   }
 
+  const refreshProfile = async (): Promise<UserProfile | null> => {
+    if (!user) return null
+    const db = getFirebaseDb()
+    const profileDoc = await getDoc(doc(db, "users", user.uid))
+    if (profileDoc.exists()) {
+      const updatedProfile = profileDoc.data() as UserProfile
+      setUserProfile(updatedProfile)
+      return updatedProfile
+    }
+    return null
+  }
+
   return (
     <AuthContext.Provider
       value={{
@@ -199,6 +212,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         completeSignIn,
         logout,
         isEmailLink,
+        refreshProfile,
       }}
     >
       {children}
