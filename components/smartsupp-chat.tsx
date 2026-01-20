@@ -16,9 +16,6 @@ export function SmartsuppChat() {
       id="smartsupp-chat"
       strategy="lazyOnload"
       src="https://www.smartsuppchat.com/loader.js?"
-      onLoad={() => {
-        console.log("[v0] Smartsupp loaded")
-      }}
     />
   )
 }

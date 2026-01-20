@@ -30,7 +30,6 @@ export default function LoginPage() {
       router.push("/dashboard")
     } catch (err: unknown) {
       const firebaseError = err as { code?: string; message?: string }
-      console.log("[v0] Login error:", firebaseError.code, firebaseError.message)
 
       if (firebaseError.code === "auth/user-not-found") {
         setError("No account found with this email.")

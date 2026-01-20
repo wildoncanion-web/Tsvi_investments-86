@@ -41,6 +41,12 @@ export function DashboardHeader() {
             Deposit
           </Link>
           <Link
+            href="/dashboard/withdraw"
+            className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+          >
+            Withdraw
+          </Link>
+          <Link
             href="/dashboard/plans"
             className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
           >
@@ -109,6 +115,13 @@ export function DashboardHeader() {
               onClick={() => setMobileMenuOpen(false)}
             >
               Deposit
+            </Link>
+            <Link
+              href="/dashboard/withdraw"
+              className="text-sm font-medium text-muted-foreground"
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              Withdraw
             </Link>
             <Link
               href="/dashboard/plans"

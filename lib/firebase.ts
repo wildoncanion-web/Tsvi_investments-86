@@ -1,3 +1,5 @@
+"use client"
+
 import { initializeApp, getApps, type FirebaseApp } from "firebase/app"
 import { getAuth, type Auth } from "firebase/auth"
 import { getFirestore, type Firestore } from "firebase/firestore"
@@ -36,8 +38,7 @@ export function getFirebaseDb(): Firestore {
   return _db
 }
 
-export const app = getApp()
-export const auth = getFirebaseAuth()
-export const db = getFirebaseDb()
-
-export default getApp
+export { getApp }
+export const app = null as unknown as FirebaseApp
+export const auth = null as unknown as Auth
+export const db = null as unknown as Firestore

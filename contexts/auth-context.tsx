@@ -12,7 +12,7 @@ import {
   updateProfile,
   type User,
 } from "firebase/auth"
-import { doc, setDoc, getDoc } from "firebase/firestore"
+import { doc, setDoc, getDoc, addDoc, collection, Timestamp } from "firebase/firestore"
 import { getFirebaseAuth, getFirebaseDb } from "@/lib/firebase"
 import { isAdmin } from "@/lib/admin"
 
@@ -107,6 +107,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     await setDoc(doc(db, "users", result.user.uid), newProfile)
     setUserProfile(newProfile)
+
+    // Create admin notification for new signup
+    await addDoc(collection(db, "admin_notifications"), {
+      type: "signup",
+      userId: result.user.uid,
+      userEmail: result.user.email,
+      userName: displayName,
+      read: false,
+      createdAt: Timestamp.now(),
+    })
   }
 
   const login = async (email: string, password: string) => {
