@@ -36,7 +36,7 @@ export function HeroSection() {
 
           <p className="animate-slide-up animation-delay-400 mx-auto mt-6 max-w-2xl text-pretty text-lg text-muted-foreground">
             Do more with your digital assets. The self-custody platform that brings the best of DeFi directly to you.
-            Invest in BTC, USDC, USDT, TON, and LTC with confidence.
+            Invest in BTC, ETH, USDC, USDT, LTC, and DOGE with confidence.
           </p>
 
           <div className="animate-scale-in animation-delay-600 mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">

@@ -17,10 +17,11 @@ import { getFirebaseDb } from "@/lib/firebase"
 
 const CRYPTO_OPTIONS = [
   { value: "BTC", label: "Bitcoin (BTC)", color: "text-orange-500" },
+  { value: "ETH", label: "Ethereum (ETH)", color: "text-indigo-500" },
   { value: "USDC", label: "USD Coin (USDC)", color: "text-blue-500" },
   { value: "USDT", label: "Tether (USDT)", color: "text-green-500" },
-  { value: "TON", label: "Toncoin (TON)", color: "text-sky-500" },
   { value: "LTC", label: "Litecoin (LTC)", color: "text-gray-400" },
+  { value: "DOGE", label: "Dogecoin (DOGE)", color: "text-amber-500" },
 ]
 
 interface WithdrawalRequest {
@@ -162,22 +163,27 @@ export default function WithdrawPage() {
     try {
       const db = getFirebaseDb()
       
-      const q = query(
+      // First, get all OTPs for this withdrawal and check manually
+      // This avoids compound index issues
+      const otpQuery = query(
         collection(db, "withdrawal_otps"),
-        where("withdrawalId", "==", pendingWithdrawalId),
-        where("otp", "==", otp),
-        where("used", "==", false)
+        where("withdrawalId", "==", pendingWithdrawalId)
       )
-      const snapshot = await getDocs(q)
+      
+      const snapshot = await getDocs(otpQuery)
+      
+      const matchingOtpDoc = snapshot.docs.find((d) => {
+        const data = d.data()
+        return data.otp === otp && data.used === false
+      })
 
-      if (snapshot.empty) {
+      if (!matchingOtpDoc) {
         setError("Invalid OTP. Please contact support via live chat to get your verification code.")
         setIsSubmitting(false)
         return
       }
 
-      const otpDoc = snapshot.docs[0]
-      await updateDoc(doc(db, "withdrawal_otps", otpDoc.id), {
+      await updateDoc(doc(db, "withdrawal_otps", matchingOtpDoc.id), {
         used: true,
         usedAt: Timestamp.now(),
       })

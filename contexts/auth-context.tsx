@@ -25,10 +25,11 @@ interface UserProfile {
   totalBalance: number
   holdings: {
     BTC: number
+    ETH: number
     USDC: number
     USDT: number
-    TON: number
     LTC: number
+    DOGE: number
   }
 }
 
@@ -73,7 +74,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
               displayName: user.displayName || user.email!.split("@")[0],
               createdAt: new Date(),
               totalBalance: 0,
-              holdings: { BTC: 0, USDC: 0, USDT: 0, TON: 0, LTC: 0 },
+              holdings: { BTC: 0, ETH: 0, USDC: 0, USDT: 0, LTC: 0, DOGE: 0 },
             }
             await setDoc(doc(db, "users", user.uid), newProfile)
             setUserProfile(newProfile)
@@ -103,7 +104,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       displayName: displayName,
       createdAt: new Date(),
       totalBalance: 0,
-      holdings: { BTC: 0, USDC: 0, USDT: 0, TON: 0, LTC: 0 },
+      holdings: { BTC: 0, ETH: 0, USDC: 0, USDT: 0, LTC: 0, DOGE: 0 },
     }
 
     await setDoc(doc(db, "users", result.user.uid), newProfile)
@@ -171,7 +172,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         displayName: displayName || email.split("@")[0],
         createdAt: new Date(),
         totalBalance: 0,
-        holdings: { BTC: 0, USDC: 0, USDT: 0, TON: 0, LTC: 0 },
+        holdings: { BTC: 0, ETH: 0, USDC: 0, USDT: 0, LTC: 0, DOGE: 0 },
       }
 
       await setDoc(doc(db, "users", result.user.uid), newProfile)

@@ -13,6 +13,17 @@ const cryptoData = [
     icon: Bitcoin,
   },
   {
+    symbol: "ETH",
+    name: "Ethereum",
+    color: "text-indigo-500",
+    bgColor: "bg-indigo-500/10",
+    icon: () => (
+      <div className="flex h-5 w-5 items-center justify-center rounded-full bg-indigo-500 text-xs font-bold text-white">
+        E
+      </div>
+    ),
+  },
+  {
     symbol: "USDC",
     name: "USD Coin",
     color: "text-blue-500",
@@ -35,17 +46,6 @@ const cryptoData = [
     ),
   },
   {
-    symbol: "TON",
-    name: "Toncoin",
-    color: "text-sky-500",
-    bgColor: "bg-sky-500/10",
-    icon: () => (
-      <div className="flex h-5 w-5 items-center justify-center rounded-full bg-sky-500 text-xs font-bold text-white">
-        T
-      </div>
-    ),
-  },
-  {
     symbol: "LTC",
     name: "Litecoin",
     color: "text-slate-400",
@@ -56,6 +56,17 @@ const cryptoData = [
       </div>
     ),
   },
+  {
+    symbol: "DOGE",
+    name: "Dogecoin",
+    color: "text-amber-500",
+    bgColor: "bg-amber-500/10",
+    icon: () => (
+      <div className="flex h-5 w-5 items-center justify-center rounded-full bg-amber-500 text-xs font-bold text-white">
+        D
+      </div>
+    ),
+  },
 ]
 
 export function HoldingsCard() {
@@ -63,10 +74,11 @@ export function HoldingsCard() {
 
   const holdings = userProfile?.holdings || {
     BTC: 0,
+    ETH: 0,
     USDC: 0,
     USDT: 0,
-    TON: 0,
     LTC: 0,
+    DOGE: 0,
   }
 
   return (

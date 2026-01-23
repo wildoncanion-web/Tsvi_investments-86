@@ -11,7 +11,7 @@ const _geistMono = Geist_Mono({ subsets: ["latin"] })
 export const metadata: Metadata = {
   title: "TSVI Investments | Secure Crypto Investments",
   description:
-    "Your trusted partner in cryptocurrency investments. Invest in BTC, USDC, USDT, TON, and LTC with confidence.",
+    "Your trusted partner in cryptocurrency investments. Invest in BTC, ETH, USDC, USDT, LTC, and DOGE with confidence.",
     generator: 'v0.app'
 }
 

@@ -14,7 +14,7 @@ export function Footer() {
             </div>
             <p className="mt-4 max-w-md text-sm text-muted-foreground">
               Your trusted partner in cryptocurrency investments. We provide secure, transparent, and profitable
-              investment solutions in BTC, USDC, USDT, TON, and LTC.
+              investment solutions in BTC, ETH, USDC, USDT, LTC, and DOGE.
             </p>
           </div>
 

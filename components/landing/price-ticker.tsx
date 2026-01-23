@@ -5,10 +5,11 @@ import { TrendingUp, TrendingDown } from "lucide-react"
 
 const cryptoPrices = [
   { symbol: "BTC", name: "Bitcoin", price: 97842.5, change: 2.45 },
+  { symbol: "ETH", name: "Ethereum", price: 3245.8, change: 1.87 },
   { symbol: "USDC", name: "USD Coin", price: 1.0, change: 0.01 },
   { symbol: "USDT", name: "Tether", price: 1.0, change: -0.02 },
-  { symbol: "TON", name: "Toncoin", price: 5.67, change: 4.12 },
   { symbol: "LTC", name: "Litecoin", price: 108.34, change: -1.23 },
+  { symbol: "DOGE", name: "Dogecoin", price: 0.32, change: 5.67 },
 ]
 
 export function PriceTicker() {

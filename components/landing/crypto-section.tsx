@@ -13,6 +13,18 @@ const cryptos = [
     hoverBgColor: "hover:bg-orange-500/20",
   },
   {
+    name: "Ethereum",
+    symbol: "ETH",
+    icon: () => (
+      <div className="flex h-6 w-6 items-center justify-center rounded-full bg-indigo-500 text-xs font-bold text-white">
+        E
+      </div>
+    ),
+    color: "text-indigo-500",
+    bgColor: "bg-indigo-500/10",
+    hoverBgColor: "hover:bg-indigo-500/20",
+  },
+  {
     name: "USDC",
     symbol: "USDC",
     icon: () => (
@@ -37,18 +49,6 @@ const cryptos = [
     hoverBgColor: "hover:bg-emerald-500/20",
   },
   {
-    name: "Toncoin",
-    symbol: "TON",
-    icon: () => (
-      <div className="flex h-6 w-6 items-center justify-center rounded-full bg-sky-500 text-xs font-bold text-white">
-        T
-      </div>
-    ),
-    color: "text-sky-500",
-    bgColor: "bg-sky-500/10",
-    hoverBgColor: "hover:bg-sky-500/20",
-  },
-  {
     name: "Litecoin",
     symbol: "LTC",
     icon: () => (
@@ -59,6 +59,18 @@ const cryptos = [
     color: "text-slate-400",
     bgColor: "bg-slate-400/10",
     hoverBgColor: "hover:bg-slate-400/20",
+  },
+  {
+    name: "Dogecoin",
+    symbol: "DOGE",
+    icon: () => (
+      <div className="flex h-6 w-6 items-center justify-center rounded-full bg-amber-500 text-xs font-bold text-white">
+        D
+      </div>
+    ),
+    color: "text-amber-500",
+    bgColor: "bg-amber-500/10",
+    hoverBgColor: "hover:bg-amber-500/20",
   },
 ]
 
@@ -95,7 +107,7 @@ export function CryptoSection() {
           </p>
         </div>
 
-        <div className="mt-12 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
+        <div className="mt-12 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6">
           {cryptos.map((crypto, index) => (
             <div
               key={crypto.symbol}

@@ -26,10 +26,11 @@ interface UserData {
   profit: number
   holdings: {
     BTC: number
+    ETH: number
     USDC: number
     USDT: number
-    TON: number
     LTC: number
+    DOGE: number
   }
   createdAt: { seconds: number }
   status: "active" | "suspended" | "pending"
@@ -53,10 +54,11 @@ export default function AdminUsersPage() {
     profit: 0,
     status: "active" as "active" | "suspended" | "pending",
     BTC: 0,
+    ETH: 0,
     USDC: 0,
     USDT: 0,
-    TON: 0,
     LTC: 0,
+    DOGE: 0,
   })
 
   const fetchUsers = async () => {
@@ -85,10 +87,11 @@ export default function AdminUsersPage() {
       profit: user.profit || 0,
       status: user.status || "active",
       BTC: user.holdings?.BTC || 0,
+      ETH: user.holdings?.ETH || 0,
       USDC: user.holdings?.USDC || 0,
       USDT: user.holdings?.USDT || 0,
-      TON: user.holdings?.TON || 0,
       LTC: user.holdings?.LTC || 0,
+      DOGE: user.holdings?.DOGE || 0,
     })
     setDialogOpen(true)
   }

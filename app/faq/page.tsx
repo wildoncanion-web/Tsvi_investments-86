@@ -14,7 +14,7 @@ const faqs = [
       {
         question: "What is the minimum deposit amount?",
         answer:
-          "The minimum deposit varies by cryptocurrency. For BTC, the minimum is 0.0001 BTC. For USDC and USDT, the minimum is $10. For TON, the minimum is 1 TON, and for LTC, it's 0.01 LTC.",
+          "The minimum deposit varies by cryptocurrency. For BTC, the minimum is 0.0001 BTC. For ETH, the minimum is 0.001 ETH. For USDC and USDT, the minimum is $10. For LTC, it's 0.01 LTC, and for DOGE, it's 10 DOGE.",
       },
       {
         question: "How long does it take for deposits to be credited?",
