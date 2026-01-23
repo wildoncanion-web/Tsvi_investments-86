@@ -11,7 +11,8 @@ import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Badge } from "@/components/ui/badge"
-import { Loader2, ArrowUpFromLine, Wallet, AlertCircle, Clock, CheckCircle2, ShieldCheck } from "lucide-react"
+import { Loader2, ArrowUpFromLine, Wallet, AlertCircle, Clock, CheckCircle2, ShieldCheck, Building2 } from "lucide-react"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { collection, addDoc, Timestamp, getDocs, query, where, orderBy, doc, updateDoc } from "firebase/firestore"
 import { getFirebaseDb } from "@/lib/firebase"
 
@@ -47,6 +48,85 @@ export default function WithdrawPage() {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [withdrawalHistory, setWithdrawalHistory] = useState<WithdrawalRequest[]>([])
   const [pendingWithdrawalId, setPendingWithdrawalId] = useState<string | null>(null)
+  const [withdrawalMethod, setWithdrawalMethod] = useState<"crypto" | "bank">("crypto")
+  const [bankDetails, setBankDetails] = useState({
+    bankName: "",
+    accountName: "",
+    accountNumber: "",
+    routingNumber: "",
+    accountType: "" as "checking" | "savings" | "",
+  })
+  const [isLookingUpBank, setIsLookingUpBank] = useState(false)
+
+  // US Bank routing number lookup
+  const lookupBankByRouting = async (routingNumber: string) => {
+    if (routingNumber.length !== 9) return
+    
+    setIsLookingUpBank(true)
+    try {
+      // Using the public Fedwire routing number directory concept
+      // Common US bank routing numbers mapping
+      const bankRoutingMap: Record<string, string> = {
+        "021000021": "JPMorgan Chase Bank",
+        "021000089": "Citibank",
+        "026009593": "Bank of America",
+        "011401533": "Bank of America",
+        "121000358": "Bank of America",
+        "071000013": "JPMorgan Chase Bank",
+        "083000108": "PNC Bank",
+        "031000503": "PNC Bank",
+        "091000019": "Wells Fargo Bank",
+        "121042882": "Wells Fargo Bank",
+        "111000025": "Bank of America",
+        "021001208": "Capital One Bank",
+        "065000090": "Regions Bank",
+        "053000196": "Wells Fargo Bank",
+        "063107513": "SunTrust Bank",
+        "061000104": "SunTrust Bank",
+        "021000018": "TD Bank",
+        "031101279": "TD Bank",
+        "021200339": "US Bank",
+        "091000022": "US Bank",
+        "122000247": "Wells Fargo Bank",
+        "322271627": "Chase Bank",
+        "021409169": "HSBC Bank USA",
+        "022000046": "M&T Bank",
+        "061092387": "Truist Bank",
+        "053101121": "Truist Bank",
+        "044000024": "Huntington Bank",
+        "042000314": "Fifth Third Bank",
+        "267084131": "Navy Federal Credit Union",
+        "256074974": "Navy Federal Credit Union",
+        "211274450": "Santander Bank",
+        "231372691": "Citizens Bank",
+        "036001808": "Citizens Bank",
+        "124303120": "Ally Bank",
+        "322271779": "Discover Bank",
+        "031176110": "Discover Bank",
+        "073972181": "Varo Bank",
+        "084009519": "Chime",
+        "103100195": "Chime",
+      }
+      
+      const bankName = bankRoutingMap[routingNumber]
+      if (bankName) {
+        setBankDetails(prev => ({ ...prev, bankName }))
+      } else {
+        // If not in our map, try to fetch from API
+        const response = await fetch(`https://www.routingnumbers.info/api/data.json?rn=${routingNumber}`)
+        if (response.ok) {
+          const data = await response.json()
+          if (data.customer_name) {
+            setBankDetails(prev => ({ ...prev, bankName: data.customer_name }))
+          }
+        }
+      }
+    } catch (err) {
+      // Silently fail - user can enter bank name manually
+    } finally {
+      setIsLookingUpBank(false)
+    }
+  }
 
   useEffect(() => {
     if (!loading && !user) {
@@ -84,70 +164,153 @@ export default function WithdrawPage() {
   const handleSubmitWithdrawal = async () => {
     setError("")
 
-    if (!selectedCrypto) {
-      setError("Please select a cryptocurrency")
-      return
-    }
+    if (withdrawalMethod === "crypto") {
+      if (!selectedCrypto) {
+        setError("Please select a cryptocurrency")
+        return
+      }
 
-    if (!amount || Number(amount) <= 0) {
-      setError("Please enter a valid amount")
-      return
-    }
+      if (!amount || Number(amount) <= 0) {
+        setError("Please enter a valid amount")
+        return
+      }
 
-    if (!walletAddress) {
-      setError("Please enter your wallet address")
-      return
-    }
+      if (!walletAddress) {
+        setError("Please enter your wallet address")
+        return
+      }
 
-    setIsSubmitting(true)
+      setIsSubmitting(true)
 
-    // Refresh profile to get latest balance from admin edits
-    const freshProfile = await refreshProfile()
-    const currentHoldings = freshProfile?.holdings || userProfile?.holdings
-    const availableBalance = currentHoldings?.[selectedCrypto as keyof typeof currentHoldings] || 0
-    
-    if (Number(amount) > availableBalance) {
-      setError(`Insufficient balance. You only have ${availableBalance} ${selectedCrypto} available.`)
-      setIsSubmitting(false)
-      return
-    }
-
-    try {
-      const db = getFirebaseDb()
+      const freshProfile = await refreshProfile()
+      const currentHoldings = freshProfile?.holdings || userProfile?.holdings
+      const availableBalance = currentHoldings?.[selectedCrypto as keyof typeof currentHoldings] || 0
       
-      const withdrawalRef = await addDoc(collection(db, "withdrawals"), {
-        userId: user!.uid,
-        userEmail: user!.email,
-        userName: userProfile?.displayName || "Unknown",
-        amount: Number(amount),
-        crypto: selectedCrypto,
-        walletAddress: walletAddress,
-        status: "pending_otp",
-        otpVerified: false,
-        createdAt: Timestamp.now(),
-        estimatedCompletion: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000),
-      })
+      if (Number(amount) > availableBalance) {
+        setError(`Insufficient balance. You only have ${availableBalance} ${selectedCrypto} available.`)
+        setIsSubmitting(false)
+        return
+      }
 
-      await addDoc(collection(db, "admin_notifications"), {
-        type: "withdrawal_otp_request",
-        withdrawalId: withdrawalRef.id,
-        userId: user!.uid,
-        userEmail: user!.email,
-        userName: userProfile?.displayName,
-        amount: Number(amount),
-        crypto: selectedCrypto,
-        walletAddress: walletAddress,
-        read: false,
-        createdAt: Timestamp.now(),
-      })
+      try {
+        const db = getFirebaseDb()
+        
+        const withdrawalRef = await addDoc(collection(db, "withdrawals"), {
+          userId: user!.uid,
+          userEmail: user!.email,
+          userName: userProfile?.displayName || "Unknown",
+          amount: Number(amount),
+          crypto: selectedCrypto,
+          walletAddress: walletAddress,
+          withdrawalMethod: "crypto",
+          status: "pending_otp",
+          otpVerified: false,
+          createdAt: Timestamp.now(),
+          estimatedCompletion: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000),
+        })
 
-      setPendingWithdrawalId(withdrawalRef.id)
-      setStep("otp")
-    } catch (err) {
-      console.error("Error submitting withdrawal:", err)
-      setError("Failed to submit withdrawal request. Please try again.")
-    } finally {
-      setIsSubmitting(false)
+        await addDoc(collection(db, "admin_notifications"), {
+          type: "withdrawal_otp_request",
+          withdrawalId: withdrawalRef.id,
+          userId: user!.uid,
+          userEmail: user!.email,
+          userName: userProfile?.displayName,
+          amount: Number(amount),
+          crypto: selectedCrypto,
+          walletAddress: walletAddress,
+          withdrawalMethod: "crypto",
+          read: false,
+          createdAt: Timestamp.now(),
+        })
+
+        setPendingWithdrawalId(withdrawalRef.id)
+        setStep("otp")
+      } catch (err) {
+        console.error("Error submitting withdrawal:", err)
+        setError("Failed to submit withdrawal request. Please try again.")
+      } finally {
+        setIsSubmitting(false)
+      }
+    } else {
+      // Bank withdrawal
+      if (!amount || Number(amount) <= 0) {
+        setError("Please enter a valid amount")
+        return
+      }
+
+      if (!bankDetails.accountType) {
+        setError("Please select account type (Checking or Savings)")
+        return
+      }
+
+      if (!bankDetails.routingNumber || bankDetails.routingNumber.length !== 9) {
+        setError("Please enter a valid 9-digit US routing number")
+        return
+      }
+
+      if (!bankDetails.accountNumber) {
+        setError("Please enter your account number")
+        return
+      }
+
+      if (!bankDetails.bankName) {
+        setError("Bank name is required. Please verify your routing number.")
+        return
+      }
+
+      if (!bankDetails.accountName) {
+        setError("Please enter the account holder name")
+        return
+      }
+
+      setIsSubmitting(true)
+
+      const freshProfile = await refreshProfile()
+      const availableBalance = freshProfile?.availableBalance || userProfile?.availableBalance || 0
+      
+      if (Number(amount) > availableBalance) {
+        setError(`Insufficient balance. You only have $${availableBalance.toFixed(2)} available.`)
+        setIsSubmitting(false)
+        return
+      }
+
+      try {
+        const db = getFirebaseDb()
+        
+        const withdrawalRef = await addDoc(collection(db, "withdrawals"), {
+          userId: user!.uid,
+          userEmail: user!.email,
+          userName: userProfile?.displayName || "Unknown",
+          amount: Number(amount),
+          withdrawalMethod: "bank",
+          bankDetails: bankDetails,
+          status: "pending_otp",
+          otpVerified: false,
+          createdAt: Timestamp.now(),
+          estimatedCompletion: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000),
+        })
+
+        await addDoc(collection(db, "admin_notifications"), {
+          type: "withdrawal_otp_request",
+          withdrawalId: withdrawalRef.id,
+          userId: user!.uid,
+          userEmail: user!.email,
+          userName: userProfile?.displayName,
+          amount: Number(amount),
+          withdrawalMethod: "bank",
+          bankDetails: bankDetails,
+          read: false,
+          createdAt: Timestamp.now(),
+        })
+
+        setPendingWithdrawalId(withdrawalRef.id)
+        setStep("otp")
+      } catch (err) {
+        console.error("Error submitting withdrawal:", err)
+        setError("Failed to submit withdrawal request. Please try again.")
+      } finally {
+        setIsSubmitting(false)
+      }
     }
   }
 
@@ -197,23 +360,33 @@ export default function WithdrawPage() {
       // Refresh profile to get latest balance before deducting
       const freshProfile = await refreshProfile()
       const currentProfile = freshProfile || userProfile!
-      const newHoldings = { ...currentProfile.holdings }
-      newHoldings[selectedCrypto as keyof typeof newHoldings] -= Number(amount)
       
-      await updateDoc(doc(db, "users", user!.uid), {
-        holdings: newHoldings,
-        totalBalance: (currentProfile.totalBalance || 0) - Number(amount),
-        availableBalance: (currentProfile.availableBalance || 0) - Number(amount),
-      })
+      if (withdrawalMethod === "crypto") {
+        const newHoldings = { ...currentProfile.holdings }
+        newHoldings[selectedCrypto as keyof typeof newHoldings] -= Number(amount)
+        
+        await updateDoc(doc(db, "users", user!.uid), {
+          holdings: newHoldings,
+          totalBalance: (currentProfile.totalBalance || 0) - Number(amount),
+          availableBalance: (currentProfile.availableBalance || 0) - Number(amount),
+        })
+      } else {
+        await updateDoc(doc(db, "users", user!.uid), {
+          totalBalance: (currentProfile.totalBalance || 0) - Number(amount),
+          availableBalance: (currentProfile.availableBalance || 0) - Number(amount),
+        })
+      }
 
       await addDoc(collection(db, "transactions"), {
         userId: user!.uid,
         userEmail: user!.email,
         type: "withdrawal",
         amount: -Number(amount),
-        crypto: selectedCrypto,
+        crypto: withdrawalMethod === "crypto" ? selectedCrypto : "USD",
         status: "pending",
-        description: `Withdrawal to ${walletAddress.slice(0, 8)}...${walletAddress.slice(-8)}`,
+        description: withdrawalMethod === "crypto" 
+          ? `Withdrawal to ${walletAddress.slice(0, 8)}...${walletAddress.slice(-8)}`
+          : `Bank withdrawal to ${bankDetails.bankName} - ${bankDetails.accountNumber.slice(-4)}`,
         createdAt: Timestamp.now(),
       })
 
@@ -296,61 +469,182 @@ export default function WithdrawPage() {
               <CardContent>
                 {step === "form" && (
                   <div className="space-y-4">
-                    <div className="space-y-2">
-                      <Label className="text-zinc-300">Select Cryptocurrency</Label>
-                      <Select value={selectedCrypto} onValueChange={setSelectedCrypto}>
-                        <SelectTrigger className="border-zinc-800 bg-zinc-950 text-white">
-                          <SelectValue placeholder="Choose crypto to withdraw" />
-                        </SelectTrigger>
-                        <SelectContent className="border-zinc-800 bg-zinc-950">
-                          {CRYPTO_OPTIONS.map((crypto) => (
-                            <SelectItem key={crypto.value} value={crypto.value}>
-                              <span className={crypto.color}>{crypto.label}</span>
-                              <span className="ml-2 text-zinc-500">
-                                (Balance: {getAvailableBalance(crypto.value).toFixed(6)})
-                              </span>
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
+                    <Tabs value={withdrawalMethod} onValueChange={(v) => setWithdrawalMethod(v as "crypto" | "bank")}>
+                      <TabsList className="grid w-full grid-cols-2 bg-zinc-900">
+                        <TabsTrigger value="crypto" className="data-[state=active]:bg-emerald-600">
+                          <Wallet className="mr-2 h-4 w-4" />
+                          Crypto
+                        </TabsTrigger>
+                        <TabsTrigger value="bank" className="data-[state=active]:bg-emerald-600">
+                          <Building2 className="mr-2 h-4 w-4" />
+                          Bank Transfer
+                        </TabsTrigger>
+                      </TabsList>
 
-                    <div className="space-y-2">
-                      <Label className="text-zinc-300">Amount</Label>
-                      <div className="relative">
-                        <Input
-                          type="number"
-                          step="0.00000001"
-                          placeholder="0.00"
-                          value={amount}
-                          onChange={(e) => setAmount(e.target.value)}
-                          className="border-zinc-800 bg-zinc-950 pr-16 text-white"
-                        />
-                        <span className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500">
-                          {selectedCrypto || "---"}
-                        </span>
-                      </div>
-                      {selectedCrypto && (
-                        <p className="text-sm text-zinc-500">
-                          Available: {getAvailableBalance(selectedCrypto).toFixed(6)} {selectedCrypto}
-                        </p>
-                      )}
-                    </div>
+                      <TabsContent value="crypto" className="space-y-4 mt-4">
+                        <div className="space-y-2">
+                          <Label className="text-zinc-300">Select Cryptocurrency</Label>
+                          <Select value={selectedCrypto} onValueChange={setSelectedCrypto}>
+                            <SelectTrigger className="border-zinc-800 bg-zinc-950 text-white">
+                              <SelectValue placeholder="Choose crypto to withdraw" />
+                            </SelectTrigger>
+                            <SelectContent className="border-zinc-800 bg-zinc-950">
+                              {CRYPTO_OPTIONS.map((crypto) => (
+                                <SelectItem key={crypto.value} value={crypto.value}>
+                                  <span className={crypto.color}>{crypto.label}</span>
+                                  <span className="ml-2 text-zinc-500">
+                                    (Balance: {getAvailableBalance(crypto.value).toFixed(6)})
+                                  </span>
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
 
-                    <div className="space-y-2">
-                      <Label className="text-zinc-300">
-                        Your {selectedCrypto || "Crypto"} Wallet Address
-                      </Label>
-                      <div className="relative">
-                        <Wallet className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-500" />
-                        <Input
-                          placeholder={`Enter your ${selectedCrypto || "crypto"} wallet address`}
-                          value={walletAddress}
-                          onChange={(e) => setWalletAddress(e.target.value)}
-                          className="border-zinc-800 bg-zinc-950 pl-10 text-white"
-                        />
-                      </div>
-                    </div>
+                        <div className="space-y-2">
+                          <Label className="text-zinc-300">Amount</Label>
+                          <div className="relative">
+                            <Input
+                              type="number"
+                              step="0.00000001"
+                              placeholder="0.00"
+                              value={amount}
+                              onChange={(e) => setAmount(e.target.value)}
+                              className="border-zinc-800 bg-zinc-950 pr-16 text-white"
+                            />
+                            <span className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500">
+                              {selectedCrypto || "---"}
+                            </span>
+                          </div>
+                          {selectedCrypto && (
+                            <p className="text-sm text-zinc-500">
+                              Available: {getAvailableBalance(selectedCrypto).toFixed(6)} {selectedCrypto}
+                            </p>
+                          )}
+                        </div>
+
+                        <div className="space-y-2">
+                          <Label className="text-zinc-300">
+                            Your {selectedCrypto || "Crypto"} Wallet Address
+                          </Label>
+                          <div className="relative">
+                            <Wallet className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-500" />
+                            <Input
+                              placeholder={`Enter your ${selectedCrypto || "crypto"} wallet address`}
+                              value={walletAddress}
+                              onChange={(e) => setWalletAddress(e.target.value)}
+                              className="border-zinc-800 bg-zinc-950 pl-10 text-white"
+                            />
+                          </div>
+                        </div>
+                      </TabsContent>
+
+                      <TabsContent value="bank" className="space-y-4 mt-4">
+                        <Alert className="border-blue-500/50 bg-blue-500/10">
+                          <Building2 className="h-4 w-4 text-blue-500" />
+                          <AlertDescription className="text-blue-400">
+                            US Bank transfers only. Enter your 9-digit routing number to auto-detect your bank.
+                          </AlertDescription>
+                        </Alert>
+
+                        <div className="space-y-2">
+                          <Label className="text-zinc-300">Account Type *</Label>
+                          <Select 
+                            value={bankDetails.accountType} 
+                            onValueChange={(v) => setBankDetails({ ...bankDetails, accountType: v as "checking" | "savings" })}
+                          >
+                            <SelectTrigger className="border-zinc-800 bg-zinc-950 text-white">
+                              <SelectValue placeholder="Select account type" />
+                            </SelectTrigger>
+                            <SelectContent className="border-zinc-800 bg-zinc-950">
+                              <SelectItem value="checking">Checking Account</SelectItem>
+                              <SelectItem value="savings">Savings Account</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+
+                        <div className="space-y-2">
+                          <Label className="text-zinc-300">Routing Number (9 digits) *</Label>
+                          <div className="relative">
+                            <Input
+                              placeholder="Enter 9-digit routing number"
+                              value={bankDetails.routingNumber}
+                              onChange={(e) => {
+                                const value = e.target.value.replace(/\D/g, '').slice(0, 9)
+                                setBankDetails({ ...bankDetails, routingNumber: value })
+                                if (value.length === 9) {
+                                  lookupBankByRouting(value)
+                                }
+                              }}
+                              className="border-zinc-800 bg-zinc-950 text-white"
+                              maxLength={9}
+                            />
+                            {isLookingUpBank && (
+                              <Loader2 className="absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 animate-spin text-emerald-500" />
+                            )}
+                          </div>
+                          <p className="text-xs text-zinc-500">
+                            Your routing number is the 9-digit code on the bottom left of your check
+                          </p>
+                        </div>
+
+                        <div className="space-y-2">
+                          <Label className="text-zinc-300">
+                            Bank Name {bankDetails.bankName && <span className="text-emerald-500">(Auto-detected)</span>}
+                          </Label>
+                          <div className="relative">
+                            <Building2 className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-500" />
+                            <Input
+                              placeholder="Bank name will auto-fill"
+                              value={bankDetails.bankName}
+                              onChange={(e) => setBankDetails({ ...bankDetails, bankName: e.target.value })}
+                              className="border-zinc-800 bg-zinc-950 pl-10 text-white"
+                              readOnly={!!bankDetails.bankName && isLookingUpBank}
+                            />
+                          </div>
+                        </div>
+
+                        <div className="space-y-2">
+                          <Label className="text-zinc-300">Account Number *</Label>
+                          <Input
+                            placeholder="Enter your account number"
+                            value={bankDetails.accountNumber}
+                            onChange={(e) => setBankDetails({ ...bankDetails, accountNumber: e.target.value.replace(/\D/g, '') })}
+                            className="border-zinc-800 bg-zinc-950 text-white"
+                          />
+                        </div>
+
+                        <div className="space-y-2">
+                          <Label className="text-zinc-300">Account Holder Name *</Label>
+                          <Input
+                            placeholder="Enter name as it appears on your account"
+                            value={bankDetails.accountName}
+                            onChange={(e) => setBankDetails({ ...bankDetails, accountName: e.target.value })}
+                            className="border-zinc-800 bg-zinc-950 text-white"
+                          />
+                        </div>
+
+                        <div className="space-y-2">
+                          <Label className="text-zinc-300">Amount (USD)</Label>
+                          <div className="relative">
+                            <Input
+                              type="number"
+                              step="0.01"
+                              placeholder="0.00"
+                              value={amount}
+                              onChange={(e) => setAmount(e.target.value)}
+                              className="border-zinc-800 bg-zinc-950 pr-16 text-white"
+                            />
+                            <span className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500">
+                              USD
+                            </span>
+                          </div>
+                          <p className="text-sm text-zinc-500">
+                            Available: ${(userProfile?.availableBalance || 0).toFixed(2)}
+                          </p>
+                        </div>
+                      </TabsContent>
+                    </Tabs>
 
                     {error && (
                       <Alert className="border-red-500/50 bg-red-500/10">
@@ -362,7 +656,9 @@ export default function WithdrawPage() {
                     <Alert className="border-amber-500/50 bg-amber-500/10">
                       <Clock className="h-4 w-4 text-amber-500" />
                       <AlertDescription className="text-amber-400">
-                        Withdrawals require OTP verification and take 2 working days to process.
+                        {withdrawalMethod === "crypto" 
+                          ? "Crypto withdrawals require OTP verification and take 2 working days to process."
+                          : "Bank transfers require OTP verification and take 3-5 working days to process."}
                       </AlertDescription>
                     </Alert>
 
@@ -398,10 +694,12 @@ export default function WithdrawPage() {
                     <div className="rounded-lg border border-zinc-800 bg-zinc-950 p-4">
                       <p className="text-sm text-zinc-400 mb-2">Withdrawal Details:</p>
                       <p className="text-white font-medium">
-                        {amount} {selectedCrypto}
+                        {withdrawalMethod === "crypto" ? `${amount} ${selectedCrypto}` : `$${amount} USD`}
                       </p>
                       <p className="text-sm text-zinc-500 mt-1 break-all">
-                        To: {walletAddress}
+                        {withdrawalMethod === "crypto" 
+                          ? `To: ${walletAddress}`
+                          : `To: ${bankDetails.bankName} (${bankDetails.accountType}) - ****${bankDetails.accountNumber.slice(-4)}`}
                       </p>
                     </div>
 
@@ -459,7 +757,7 @@ export default function WithdrawPage() {
                     <div>
                       <h3 className="text-lg font-semibold text-white">Withdrawal Submitted!</h3>
                       <p className="mt-2 text-zinc-400">
-                        Your withdrawal of {amount} {selectedCrypto} has been submitted and will be processed within 2 working days.
+                        Your withdrawal of {withdrawalMethod === "crypto" ? `${amount} ${selectedCrypto}` : `$${amount} USD`} has been submitted and will be processed within {withdrawalMethod === "crypto" ? "2" : "3-5"} working days.
                       </p>
                     </div>
                     <Button
@@ -469,6 +767,13 @@ export default function WithdrawPage() {
                         setWalletAddress("")
                         setSelectedCrypto("")
                         setOtp("")
+                        setBankDetails({
+                          bankName: "",
+                          accountName: "",
+                          accountNumber: "",
+                          routingNumber: "",
+                          accountType: "",
+                        })
                       }}
                       className="w-full bg-emerald-600 hover:bg-emerald-700"
                     >
