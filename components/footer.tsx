@@ -16,6 +16,11 @@ export function Footer() {
               Your trusted partner in cryptocurrency investments. We provide secure, transparent, and profitable
               investment solutions in BTC, ETH, USDC, USDT, LTC, and DOGE.
             </p>
+            <p className="mt-3 text-sm text-muted-foreground">
+              <a href="mailto:support@tsviinvestments.com" className="hover:text-primary transition-colors">
+                support@tsviinvestments.com
+              </a>
+            </p>
           </div>
 
           <div>

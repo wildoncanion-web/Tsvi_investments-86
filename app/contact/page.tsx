@@ -38,7 +38,7 @@ export default function ContactPage() {
     {
       icon: Mail,
       title: "Email Us",
-      description: "support@tsvi-investments.com",
+      description: "support@tsviinvestments.com",
       subtitle: "We respond within 24 hours",
     },
     {
