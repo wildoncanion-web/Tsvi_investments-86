@@ -22,8 +22,16 @@ interface WithdrawalData {
   userEmail: string
   userName: string
   amount: number
-  crypto: string
-  walletAddress: string
+  crypto?: string
+  walletAddress?: string
+  withdrawalMethod?: "crypto" | "bank"
+  bankDetails?: {
+    bankName: string
+    accountName: string
+    accountNumber: string
+    routingNumber: string
+    accountType: string
+  }
   status: "pending_otp" | "pending" | "processing" | "completed" | "rejected"
   otpVerified: boolean
   createdAt: { seconds: number }
@@ -304,7 +312,7 @@ export default function AdminWithdrawalsPage() {
                 <TableRow className="border-zinc-800 hover:bg-transparent">
                   <TableHead className="text-zinc-500">User</TableHead>
                   <TableHead className="text-zinc-500">Amount</TableHead>
-                  <TableHead className="text-zinc-500">Wallet Address</TableHead>
+                  <TableHead className="text-zinc-500">Destination</TableHead>
                   <TableHead className="text-zinc-500">Status</TableHead>
                   <TableHead className="text-zinc-500">Date</TableHead>
                   <TableHead className="text-right text-zinc-500">Actions</TableHead>
@@ -321,13 +329,28 @@ export default function AdminWithdrawalsPage() {
                     </TableCell>
                     <TableCell>
                       <span className="font-medium text-white">
-                        {withdrawal.amount} {withdrawal.crypto}
+                        {withdrawal.withdrawalMethod === "bank" || withdrawal.bankDetails 
+                          ? `$${withdrawal.amount.toLocaleString()}` 
+                          : `${withdrawal.amount} ${withdrawal.crypto}`}
                       </span>
                     </TableCell>
                     <TableCell>
-                      <code className="text-xs text-zinc-400 bg-zinc-800 px-2 py-1 rounded">
-                        {withdrawal.walletAddress.slice(0, 12)}...{withdrawal.walletAddress.slice(-8)}
-                      </code>
+                      {withdrawal.withdrawalMethod === "bank" || withdrawal.bankDetails ? (
+                        <div className="text-xs text-zinc-400">
+                          <p className="font-medium text-white">{withdrawal.bankDetails?.bankName || "Bank"}</p>
+                          <p>****{withdrawal.bankDetails?.accountNumber?.slice(-4) || "N/A"} ({withdrawal.bankDetails?.accountType || "N/A"})</p>
+                        </div>
+                      ) : withdrawal.walletAddress && withdrawal.walletAddress.length > 20 ? (
+                        <code className="text-xs text-zinc-400 bg-zinc-800 px-2 py-1 rounded">
+                          {withdrawal.walletAddress.slice(0, 12)}...{withdrawal.walletAddress.slice(-8)}
+                        </code>
+                      ) : withdrawal.walletAddress ? (
+                        <code className="text-xs text-zinc-400 bg-zinc-800 px-2 py-1 rounded">
+                          {withdrawal.walletAddress}
+                        </code>
+                      ) : (
+                        <span className="text-zinc-500">N/A</span>
+                      )}
                     </TableCell>
                     <TableCell>{getStatusBadge(withdrawal.status)}</TableCell>
                     <TableCell className="text-zinc-400">
@@ -411,10 +434,14 @@ export default function AdminWithdrawalsPage() {
               <div className="rounded-lg border border-zinc-800 bg-zinc-900 p-4">
                 <p className="text-sm text-zinc-500 mb-2">User: {selectedWithdrawal?.userEmail}</p>
                 <p className="text-sm text-zinc-500 mb-2">
-                  Amount: {selectedWithdrawal?.amount} {selectedWithdrawal?.crypto}
+                  Amount: {selectedWithdrawal?.withdrawalMethod === "bank" || selectedWithdrawal?.bankDetails 
+                    ? `$${selectedWithdrawal?.amount?.toLocaleString()}` 
+                    : `${selectedWithdrawal?.amount} ${selectedWithdrawal?.crypto}`}
                 </p>
                 <p className="text-sm text-zinc-500 break-all">
-                  Wallet: {selectedWithdrawal?.walletAddress}
+                  {selectedWithdrawal?.withdrawalMethod === "bank" || selectedWithdrawal?.bankDetails 
+                    ? `Bank: ${selectedWithdrawal?.bankDetails?.bankName} - ****${selectedWithdrawal?.bankDetails?.accountNumber?.slice(-4)}`
+                    : `Wallet: ${selectedWithdrawal?.walletAddress || 'N/A'}`}
                 </p>
               </div>
               
