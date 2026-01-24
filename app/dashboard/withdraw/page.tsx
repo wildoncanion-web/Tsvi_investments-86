@@ -326,11 +326,25 @@ export default function WithdrawPage() {
     try {
       const db = getFirebaseDb()
       
-      console.log("[v0] Verifying OTP for withdrawal:", pendingWithdrawalId)
+      console.log("[v0] ========== OTP VERIFICATION START ==========")
+      console.log("[v0] Withdrawal ID:", pendingWithdrawalId)
       console.log("[v0] User entered OTP:", otp)
       
-      // First, get all OTPs for this withdrawal and check manually
-      // This avoids compound index issues
+      // First try to get ALL OTPs to see what's in the database
+      const allOtpsSnapshot = await getDocs(collection(db, "withdrawal_otps"))
+      console.log("[v0] Total OTP documents in database:", allOtpsSnapshot.docs.length)
+      allOtpsSnapshot.docs.forEach((d, i) => {
+        const data = d.data()
+        console.log(`[v0] ALL OTP doc ${i}:`, { 
+          withdrawalId: data.withdrawalId, 
+          otp: data.otp, 
+          used: data.used,
+          userId: data.userId,
+          docId: d.id 
+        })
+      })
+      
+      // Now query specifically for this withdrawal
       const otpQuery = query(
         collection(db, "withdrawal_otps"),
         where("withdrawalId", "==", pendingWithdrawalId)
@@ -338,25 +352,27 @@ export default function WithdrawPage() {
       
       const snapshot = await getDocs(otpQuery)
       
-      console.log("[v0] Found OTP documents:", snapshot.docs.length)
+      console.log("[v0] OTPs matching this withdrawal:", snapshot.docs.length)
       snapshot.docs.forEach((d, i) => {
         const data = d.data()
-        console.log(`[v0] OTP doc ${i}:`, { otp: data.otp, used: data.used, id: d.id })
+        console.log(`[v0] Matched OTP doc ${i}:`, { otp: data.otp, used: data.used, id: d.id })
       })
       
       const matchingOtpDoc = snapshot.docs.find((d) => {
         const data = d.data()
-        return data.otp === otp && data.used === false
+        const matches = data.otp === otp && data.used === false
+        console.log(`[v0] Checking: stored=${data.otp} vs entered=${otp}, used=${data.used}, matches=${matches}`)
+        return matches
       })
 
       if (!matchingOtpDoc) {
-        console.log("[v0] No matching OTP found. Expected:", otp)
+        console.log("[v0] No matching OTP found!")
         setError("Invalid OTP. Please contact support via live chat to get your verification code.")
         setIsSubmitting(false)
         return
       }
       
-      console.log("[v0] Found matching OTP:", matchingOtpDoc.id)
+      console.log("[v0] SUCCESS - Found matching OTP:", matchingOtpDoc.id)
 
       await updateDoc(doc(db, "withdrawal_otps", matchingOtpDoc.id), {
         used: true,
