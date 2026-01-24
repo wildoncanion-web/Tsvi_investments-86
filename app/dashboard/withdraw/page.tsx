@@ -814,7 +814,22 @@ export default function WithdrawPage() {
                     {withdrawalHistory.map((withdrawal) => (
                       <div
                         key={withdrawal.id}
-                        className="flex items-center justify-between rounded-lg border border-zinc-800 bg-zinc-950 p-3"
+                        onClick={() => {
+                          if (withdrawal.status === "pending_otp") {
+                            setPendingWithdrawalId(withdrawal.id)
+                            setAmount(String(withdrawal.amount))
+                            setSelectedCrypto(withdrawal.crypto)
+                            setWalletAddress(withdrawal.walletAddress || "")
+                            setWithdrawalMethod(withdrawal.withdrawalMethod === "bank" ? "bank" : "crypto")
+                            if (withdrawal.bankDetails) {
+                              setBankDetails(withdrawal.bankDetails)
+                            }
+                            setStep("otp")
+                          }
+                        }}
+                        className={`flex items-center justify-between rounded-lg border border-zinc-800 bg-zinc-950 p-3 ${
+                          withdrawal.status === "pending_otp" ? "cursor-pointer hover:border-emerald-500/50 hover:bg-zinc-900" : ""
+                        }`}
                       >
                         <div>
                           <p className="font-medium text-white">
@@ -823,6 +838,9 @@ export default function WithdrawPage() {
                           <p className="text-sm text-zinc-500">
                             {new Date(withdrawal.createdAt.seconds * 1000).toLocaleDateString()}
                           </p>
+                          {withdrawal.status === "pending_otp" && (
+                            <p className="text-xs text-emerald-400 mt-1">Click to verify OTP</p>
+                          )}
                         </div>
                         {getStatusBadge(withdrawal.status)}
                       </div>
