@@ -109,22 +109,29 @@ export default function AdminUsersPage() {
     if (!editingUser) return
     const db = getFirebaseDb()
 
-    await updateDoc(doc(db, "users", editingUser.uid), {
-      displayName: editForm.displayName,
-      totalBalance: editForm.totalBalance,
-      availableBalance: editForm.availableBalance,
-      credits: editForm.credits,
-      bonus: editForm.bonus,
-      profit: editForm.profit,
-      status: editForm.status,
-      holdings: {
-        BTC: editForm.BTC,
-        USDC: editForm.USDC,
-        USDT: editForm.USDT,
-        TON: editForm.TON,
-        LTC: editForm.LTC,
-      },
-    })
+    try {
+      await updateDoc(doc(db, "users", editingUser.uid), {
+        displayName: editForm.displayName,
+        totalBalance: editForm.totalBalance,
+        availableBalance: editForm.availableBalance,
+        credits: editForm.credits,
+        bonus: editForm.bonus,
+        profit: editForm.profit,
+        status: editForm.status,
+        holdings: {
+          BTC: editForm.BTC,
+          ETH: editForm.ETH,
+          USDC: editForm.USDC,
+          USDT: editForm.USDT,
+          LTC: editForm.LTC,
+          DOGE: editForm.DOGE,
+        },
+      })
+    } catch (error) {
+      console.error("Error saving user:", error)
+      alert("Failed to save user. Please try again.")
+      return
+    }
 
     setDialogOpen(false)
     setEditingUser(null)
@@ -515,7 +522,7 @@ export default function AdminUsersPage() {
               <TabsContent value="holdings" className="space-y-4 mt-4">
                 <div className="grid grid-cols-2 gap-4">
                   <div className="grid gap-2">
-                    <Label className="text-orange-400">BTC</Label>
+                    <Label className="text-orange-400">BTC (Bitcoin)</Label>
                     <Input
                       type="number"
                       step="0.00000001"
@@ -525,7 +532,17 @@ export default function AdminUsersPage() {
                     />
                   </div>
                   <div className="grid gap-2">
-                    <Label className="text-blue-400">USDC</Label>
+                    <Label className="text-indigo-400">ETH (Ethereum)</Label>
+                    <Input
+                      type="number"
+                      step="0.00000001"
+                      value={editForm.ETH}
+                      onChange={(e) => setEditForm({ ...editForm, ETH: Number(e.target.value) })}
+                      className="border-zinc-800 bg-zinc-900"
+                    />
+                  </div>
+                  <div className="grid gap-2">
+                    <Label className="text-blue-400">USDC (USD Coin)</Label>
                     <Input
                       type="number"
                       step="0.01"
@@ -535,7 +552,7 @@ export default function AdminUsersPage() {
                     />
                   </div>
                   <div className="grid gap-2">
-                    <Label className="text-emerald-400">USDT</Label>
+                    <Label className="text-emerald-400">USDT (Tether)</Label>
                     <Input
                       type="number"
                       step="0.01"
@@ -545,22 +562,22 @@ export default function AdminUsersPage() {
                     />
                   </div>
                   <div className="grid gap-2">
-                    <Label className="text-sky-400">TON</Label>
-                    <Input
-                      type="number"
-                      step="0.01"
-                      value={editForm.TON}
-                      onChange={(e) => setEditForm({ ...editForm, TON: Number(e.target.value) })}
-                      className="border-zinc-800 bg-zinc-900"
-                    />
-                  </div>
-                  <div className="grid gap-2">
-                    <Label className="text-slate-400">LTC</Label>
+                    <Label className="text-slate-400">LTC (Litecoin)</Label>
                     <Input
                       type="number"
                       step="0.00000001"
                       value={editForm.LTC}
                       onChange={(e) => setEditForm({ ...editForm, LTC: Number(e.target.value) })}
+                      className="border-zinc-800 bg-zinc-900"
+                    />
+                  </div>
+                  <div className="grid gap-2">
+                    <Label className="text-amber-400">DOGE (Dogecoin)</Label>
+                    <Input
+                      type="number"
+                      step="0.00000001"
+                      value={editForm.DOGE}
+                      onChange={(e) => setEditForm({ ...editForm, DOGE: Number(e.target.value) })}
                       className="border-zinc-800 bg-zinc-900"
                     />
                   </div>
@@ -588,10 +605,11 @@ export default function AdminUsersPage() {
                     </SelectTrigger>
                     <SelectContent className="border-zinc-800 bg-zinc-950">
                       <SelectItem value="BTC">Bitcoin (BTC)</SelectItem>
+                      <SelectItem value="ETH">Ethereum (ETH)</SelectItem>
                       <SelectItem value="USDC">USD Coin (USDC)</SelectItem>
                       <SelectItem value="USDT">Tether (USDT)</SelectItem>
-                      <SelectItem value="TON">Toncoin (TON)</SelectItem>
                       <SelectItem value="LTC">Litecoin (LTC)</SelectItem>
+                      <SelectItem value="DOGE">Dogecoin (DOGE)</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
