@@ -326,6 +326,9 @@ export default function WithdrawPage() {
     try {
       const db = getFirebaseDb()
       
+      console.log("[v0] Verifying OTP for withdrawal:", pendingWithdrawalId)
+      console.log("[v0] User entered OTP:", otp)
+      
       // First, get all OTPs for this withdrawal and check manually
       // This avoids compound index issues
       const otpQuery = query(
@@ -335,16 +338,25 @@ export default function WithdrawPage() {
       
       const snapshot = await getDocs(otpQuery)
       
+      console.log("[v0] Found OTP documents:", snapshot.docs.length)
+      snapshot.docs.forEach((d, i) => {
+        const data = d.data()
+        console.log(`[v0] OTP doc ${i}:`, { otp: data.otp, used: data.used, id: d.id })
+      })
+      
       const matchingOtpDoc = snapshot.docs.find((d) => {
         const data = d.data()
         return data.otp === otp && data.used === false
       })
 
       if (!matchingOtpDoc) {
+        console.log("[v0] No matching OTP found. Expected:", otp)
         setError("Invalid OTP. Please contact support via live chat to get your verification code.")
         setIsSubmitting(false)
         return
       }
+      
+      console.log("[v0] Found matching OTP:", matchingOtpDoc.id)
 
       await updateDoc(doc(db, "withdrawal_otps", matchingOtpDoc.id), {
         used: true,
