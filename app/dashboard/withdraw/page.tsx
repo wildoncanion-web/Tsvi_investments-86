@@ -326,8 +326,6 @@ export default function WithdrawPage() {
     try {
       const db = getFirebaseDb()
       
-      console.log("[v0] Verifying OTP - Withdrawal ID:", pendingWithdrawalId, "User OTP:", otp)
-      
       // Query OTPs for this specific withdrawal only
       const otpQuery = query(
         collection(db, "withdrawal_otps"),
@@ -336,8 +334,6 @@ export default function WithdrawPage() {
       
       const snapshot = await getDocs(otpQuery)
       
-      console.log("[v0] Found", snapshot.docs.length, "OTPs for this withdrawal")
-      
       // Find matching OTP that hasn't been used
       // Convert both to strings for comparison to handle type mismatches
       const matchingOtpDoc = snapshot.docs.find((d) => {
@@ -345,18 +341,14 @@ export default function WithdrawPage() {
         const storedOtp = String(data.otp)
         const enteredOtp = String(otp)
         const isUsed = data.used === true
-        console.log("[v0] Comparing - Stored:", storedOtp, "Entered:", enteredOtp, "Used:", isUsed)
         return storedOtp === enteredOtp && !isUsed
       })
 
       if (!matchingOtpDoc) {
-        console.log("[v0] No matching OTP found!")
         setError("Invalid OTP. Please contact support via live chat to get your verification code.")
         setIsSubmitting(false)
         return
       }
-      
-      console.log("[v0] OTP verified successfully!")
 
       await updateDoc(doc(db, "withdrawal_otps", matchingOtpDoc.id), {
         used: true,

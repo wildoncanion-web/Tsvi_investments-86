@@ -110,6 +110,12 @@ export default function AdminUsersPage() {
     const db = getFirebaseDb()
 
     try {
+      // Track changes for transaction records
+      const oldCredits = editingUser.credits || 0
+      const oldBonus = editingUser.bonus || 0
+      const oldProfit = editingUser.profit || 0
+      const oldTotalBalance = editingUser.totalBalance || 0
+
       await updateDoc(doc(db, "users", editingUser.uid), {
         displayName: editForm.displayName,
         totalBalance: editForm.totalBalance,
@@ -127,6 +133,60 @@ export default function AdminUsersPage() {
           DOGE: editForm.DOGE,
         },
       })
+
+      // Create transaction records for changes
+      if (editForm.credits !== oldCredits) {
+        const diff = editForm.credits - oldCredits
+        await addDoc(collection(db, "transactions"), {
+          userId: editingUser.uid,
+          userEmail: editingUser.email,
+          type: "credit",
+          amount: Math.abs(diff),
+          description: diff > 0 ? "Credit added by admin" : "Credit removed by admin",
+          status: "completed",
+          createdAt: Timestamp.now(),
+        })
+      }
+
+      if (editForm.bonus !== oldBonus) {
+        const diff = editForm.bonus - oldBonus
+        await addDoc(collection(db, "transactions"), {
+          userId: editingUser.uid,
+          userEmail: editingUser.email,
+          type: "bonus",
+          amount: Math.abs(diff),
+          description: diff > 0 ? "Bonus added by admin" : "Bonus removed by admin",
+          status: "completed",
+          createdAt: Timestamp.now(),
+        })
+      }
+
+      if (editForm.profit !== oldProfit) {
+        const diff = editForm.profit - oldProfit
+        await addDoc(collection(db, "transactions"), {
+          userId: editingUser.uid,
+          userEmail: editingUser.email,
+          type: "profit",
+          amount: Math.abs(diff),
+          description: diff > 0 ? "Profit added by admin" : "Profit adjusted by admin",
+          status: "completed",
+          createdAt: Timestamp.now(),
+        })
+      }
+
+      if (editForm.totalBalance !== oldTotalBalance) {
+        const diff = editForm.totalBalance - oldTotalBalance
+        await addDoc(collection(db, "transactions"), {
+          userId: editingUser.uid,
+          userEmail: editingUser.email,
+          type: diff > 0 ? "deposit" : "withdrawal",
+          amount: Math.abs(diff),
+          description: "Balance adjusted by admin",
+          status: "completed",
+          createdAt: Timestamp.now(),
+        })
+      }
+
     } catch (error) {
       console.error("Error saving user:", error)
       alert("Failed to save user. Please try again.")
