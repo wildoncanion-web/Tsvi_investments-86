@@ -3,77 +3,80 @@
 
 @custom-variant dark (&:is(.dark *));
 
-/* Updated to dark theme with emerald primary and amber accent for crypto platform */
+/* Rebranded palette: near-black base, bright green accent, dark green secondary.
+   #5DD62C primary, #337418 secondary/borders, #0F0F0F background, #202020 cards,
+   #F8F8F8 text, #9A9A9A secondary text, #F0524F losses only.
+   Added neutral: #2A2A2A for muted surfaces and inputs. */
 :root {
-  --background: oklch(0.12 0.01 260);
-  --foreground: oklch(0.98 0 0);
-  --card: oklch(0.16 0.01 260);
-  --card-foreground: oklch(0.98 0 0);
-  --popover: oklch(0.16 0.01 260);
-  --popover-foreground: oklch(0.98 0 0);
-  --primary: oklch(0.7 0.17 162);
-  --primary-foreground: oklch(0.12 0.01 260);
-  --secondary: oklch(0.2 0.01 260);
-  --secondary-foreground: oklch(0.98 0 0);
-  --muted: oklch(0.25 0.01 260);
-  --muted-foreground: oklch(0.65 0.01 260);
-  --accent: oklch(0.75 0.15 85);
-  --accent-foreground: oklch(0.12 0.01 260);
-  --destructive: oklch(0.55 0.22 27);
-  --destructive-foreground: oklch(0.98 0 0);
-  --border: oklch(0.28 0.01 260);
-  --input: oklch(0.22 0.01 260);
-  --ring: oklch(0.7 0.17 162);
-  --chart-1: oklch(0.7 0.17 162);
-  --chart-2: oklch(0.75 0.15 85);
-  --chart-3: oklch(0.65 0.15 250);
-  --chart-4: oklch(0.7 0.2 35);
-  --chart-5: oklch(0.65 0.18 200);
+  --background: #0f0f0f;
+  --foreground: #f8f8f8;
+  --card: #202020;
+  --card-foreground: #f8f8f8;
+  --popover: #202020;
+  --popover-foreground: #f8f8f8;
+  --primary: #5dd62c;
+  --primary-foreground: #0f0f0f;
+  --secondary: #337418;
+  --secondary-foreground: #f8f8f8;
+  --muted: #2a2a2a;
+  --muted-foreground: #9a9a9a;
+  --accent: #337418;
+  --accent-foreground: #f8f8f8;
+  --destructive: #f0524f;
+  --destructive-foreground: #0f0f0f;
+  --border: rgb(51 116 24 / 0.4);
+  --input: #2a2a2a;
+  --ring: #5dd62c;
+  --chart-1: #5dd62c;
+  --chart-2: #337418;
+  --chart-3: #9a9a9a;
+  --chart-4: #8ce35f;
+  --chart-5: #f8f8f8;
   --radius: 0.625rem;
-  --sidebar: oklch(0.14 0.01 260);
-  --sidebar-foreground: oklch(0.98 0 0);
-  --sidebar-primary: oklch(0.7 0.17 162);
-  --sidebar-primary-foreground: oklch(0.12 0.01 260);
-  --sidebar-accent: oklch(0.2 0.01 260);
-  --sidebar-accent-foreground: oklch(0.98 0 0);
-  --sidebar-border: oklch(0.28 0.01 260);
-  --sidebar-ring: oklch(0.7 0.17 162);
+  --sidebar: #202020;
+  --sidebar-foreground: #f8f8f8;
+  --sidebar-primary: #5dd62c;
+  --sidebar-primary-foreground: #0f0f0f;
+  --sidebar-accent: #2a2a2a;
+  --sidebar-accent-foreground: #f8f8f8;
+  --sidebar-border: rgb(51 116 24 / 0.4);
+  --sidebar-ring: #5dd62c;
 }
 
 /* Dark class inherits root since we're dark by default */
 .dark {
-  --background: oklch(0.12 0.01 260);
-  --foreground: oklch(0.98 0 0);
-  --card: oklch(0.16 0.01 260);
-  --card-foreground: oklch(0.98 0 0);
-  --popover: oklch(0.16 0.01 260);
-  --popover-foreground: oklch(0.98 0 0);
-  --primary: oklch(0.7 0.17 162);
-  --primary-foreground: oklch(0.12 0.01 260);
-  --secondary: oklch(0.2 0.01 260);
-  --secondary-foreground: oklch(0.98 0 0);
-  --muted: oklch(0.25 0.01 260);
-  --muted-foreground: oklch(0.65 0.01 260);
-  --accent: oklch(0.75 0.15 85);
-  --accent-foreground: oklch(0.12 0.01 260);
-  --destructive: oklch(0.55 0.22 27);
-  --destructive-foreground: oklch(0.98 0 0);
-  --border: oklch(0.28 0.01 260);
-  --input: oklch(0.22 0.01 260);
-  --ring: oklch(0.7 0.17 162);
-  --chart-1: oklch(0.7 0.17 162);
-  --chart-2: oklch(0.75 0.15 85);
-  --chart-3: oklch(0.65 0.15 250);
-  --chart-4: oklch(0.7 0.2 35);
-  --chart-5: oklch(0.65 0.18 200);
-  --sidebar: oklch(0.14 0.01 260);
-  --sidebar-foreground: oklch(0.98 0 0);
-  --sidebar-primary: oklch(0.7 0.17 162);
-  --sidebar-primary-foreground: oklch(0.12 0.01 260);
-  --sidebar-accent: oklch(0.2 0.01 260);
-  --sidebar-accent-foreground: oklch(0.98 0 0);
-  --sidebar-border: oklch(0.28 0.01 260);
-  --sidebar-ring: oklch(0.7 0.17 162);
+  --background: #0f0f0f;
+  --foreground: #f8f8f8;
+  --card: #202020;
+  --card-foreground: #f8f8f8;
+  --popover: #202020;
+  --popover-foreground: #f8f8f8;
+  --primary: #5dd62c;
+  --primary-foreground: #0f0f0f;
+  --secondary: #337418;
+  --secondary-foreground: #f8f8f8;
+  --muted: #2a2a2a;
+  --muted-foreground: #9a9a9a;
+  --accent: #337418;
+  --accent-foreground: #f8f8f8;
+  --destructive: #f0524f;
+  --destructive-foreground: #0f0f0f;
+  --border: rgb(51 116 24 / 0.4);
+  --input: #2a2a2a;
+  --ring: #5dd62c;
+  --chart-1: #5dd62c;
+  --chart-2: #337418;
+  --chart-3: #9a9a9a;
+  --chart-4: #8ce35f;
+  --chart-5: #f8f8f8;
+  --sidebar: #202020;
+  --sidebar-foreground: #f8f8f8;
+  --sidebar-primary: #5dd62c;
+  --sidebar-primary-foreground: #0f0f0f;
+  --sidebar-accent: #2a2a2a;
+  --sidebar-accent-foreground: #f8f8f8;
+  --sidebar-border: rgb(51 116 24 / 0.4);
+  --sidebar-ring: #5dd62c;
 }
 
 @theme inline {
