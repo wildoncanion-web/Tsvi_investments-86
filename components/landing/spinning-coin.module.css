@@ -58,6 +58,8 @@
 
 .back {
   transform: rotateY(180deg) translateZ(calc(var(--coin-size) * 0.03));
+  background-image: url("/images/coin-back-invest.png");
+  background-size: 192% auto;
 }
 
 @keyframes coin-flip {
