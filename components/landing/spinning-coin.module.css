@@ -36,34 +36,20 @@
   inset: 0;
   border-radius: 50%;
   background: var(--coin-dark);
+  box-shadow: inset 0 0 0 calc(var(--coin-size) * 0.008) #1a1208;
 }
 
 .face {
   position: absolute;
   inset: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 0.25rem;
   border-radius: 50%;
   backface-visibility: hidden;
-  color: var(--coin-ink);
-  background:
-    radial-gradient(circle at 30% 25%, var(--coin-light) 0%, transparent 45%),
-    radial-gradient(circle at center, var(--coin-color) 55%, var(--coin-dark) 100%);
-  box-shadow:
-    inset 0 0 0 calc(var(--coin-size) * 0.035) var(--coin-dark),
-    inset 0 0 0 calc(var(--coin-size) * 0.05) var(--coin-light),
-    inset 0 0 calc(var(--coin-size) * 0.08) rgb(122 78 11 / 0.45);
-}
-
-.face::before {
-  content: "";
-  position: absolute;
-  inset: 12%;
-  border-radius: 50%;
-  border: calc(var(--coin-size) * 0.008) dashed rgb(122 78 11 / 0.45);
+  background-color: var(--coin-color);
+  background-image: url("/images/bitcoin-coin.jpeg");
+  background-size: 114%;
+  background-position: 50% 50%;
+  background-repeat: no-repeat;
+  box-shadow: inset 0 0 0 calc(var(--coin-size) * 0.01) #1a1208;
 }
 
 .front {
@@ -72,22 +58,6 @@
 
 .back {
   transform: rotateY(180deg) translateZ(calc(var(--coin-size) * 0.03));
-}
-
-.symbol {
-  font-size: calc(var(--coin-size) * 0.42);
-  font-weight: 800;
-  line-height: 1;
-  text-shadow:
-    0 2px 0 var(--coin-light),
-    0 -1px 0 rgb(122 78 11 / 0.5);
-}
-
-.label {
-  font-size: calc(var(--coin-size) * 0.055);
-  font-weight: 700;
-  letter-spacing: 0.3em;
-  text-transform: uppercase;
 }
 
 @keyframes coin-flip {

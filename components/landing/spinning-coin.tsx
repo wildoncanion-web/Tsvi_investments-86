@@ -4,7 +4,7 @@ const EDGE_LAYERS = Array.from({ length: 12 }, (_, i) => i)
 
 export function SpinningCoin() {
   return (
-    <div className={styles.stage} role="img" aria-label="Spinning gold Tsvi Investments coin">
+    <div className={styles.stage} role="img" aria-label="Spinning gold Bitcoin coin">
       <div className={styles.shadow} aria-hidden="true" />
       <div className={styles.coin} aria-hidden="true">
         {EDGE_LAYERS.map((layer) => (
@@ -16,14 +16,8 @@ export function SpinningCoin() {
             }}
           />
         ))}
-        <div className={`${styles.face} ${styles.front}`}>
-          <span className={styles.symbol}>T</span>
-          <span className={styles.label}>Tsvi</span>
-        </div>
-        <div className={`${styles.face} ${styles.back}`}>
-          <span className={styles.symbol}>$</span>
-          <span className={styles.label}>Invest</span>
-        </div>
+        <div className={`${styles.face} ${styles.front}`} />
+        <div className={`${styles.face} ${styles.back}`} />
       </div>
     </div>
   )
