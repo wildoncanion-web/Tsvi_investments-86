@@ -2,6 +2,7 @@
 
 import Image from "next/image"
 import { Star, Quote } from "lucide-react"
+import { HudFrame } from "./hud-frame"
 import { useEffect, useRef, useState } from "react"
 
 const testimonials = [
@@ -67,15 +68,16 @@ export function Testimonials() {
 
         <div className="mt-12 grid grid-cols-1 gap-6 md:grid-cols-2 md:grid-rows-2">
           {testimonials.map((testimonial, index) => (
-            <div
+            <HudFrame
               key={testimonial.name}
               onMouseEnter={() => setHoveredIndex(index)}
               onMouseLeave={() => setHoveredIndex(null)}
-              className={`relative flex flex-col rounded-2xl border border-border bg-secondary/50 p-6 transition-all duration-500 ${
-                index === 0 ? "md:row-span-2 md:p-10 md:text-lg" : ""
-              } ${
+              active={hoveredIndex === index}
+              fill="var(--secondary)"
+              className={`transition-all duration-500 ${index === 0 ? "md:row-span-2" : ""} ${
                 isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
-              } ${hoveredIndex === index ? "-translate-y-2 border-primary/50 shadow-xl shadow-primary/10" : ""}`}
+              } ${hoveredIndex === index ? "-translate-y-2" : ""}`}
+              contentClassName={`flex flex-col p-6 ${index === 0 ? "md:p-10 md:text-lg" : ""}`}
               style={{ transitionDelay: isVisible ? `${index * 150}ms` : "0ms" }}
             >
               {/* Quote icon */}
@@ -129,7 +131,7 @@ export function Testimonials() {
                   <p className="text-sm text-muted-foreground">{testimonial.role}</p>
                 </div>
               </div>
-            </div>
+            </HudFrame>
           ))}
         </div>
       </div>

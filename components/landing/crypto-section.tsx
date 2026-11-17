@@ -1,6 +1,7 @@
 "use client"
 
 import { Bitcoin } from "lucide-react"
+import { HudFrame } from "./hud-frame"
 import { useEffect, useRef, useState } from "react"
 
 const cryptos = [
@@ -112,11 +113,13 @@ export function CryptoSection() {
 
         <div className="grid flex-1 grid-cols-2 gap-4 sm:grid-cols-3">
           {cryptos.map((crypto, index) => (
-            <div
+            <HudFrame
               key={crypto.symbol}
-              className={`group flex cursor-pointer flex-col items-center gap-4 rounded-2xl border border-border bg-secondary/50 p-6 transition-all duration-500 hover:border-primary/50 hover:bg-secondary hover:-translate-y-2 hover:shadow-xl hover:shadow-primary/10 ${
+              fill="var(--secondary)"
+              className={`group cursor-pointer transition-all duration-500 hover:-translate-y-2 hover:[--frame-color:var(--primary)] ${
                 isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
               }`}
+              contentClassName="flex flex-col items-center gap-4 p-6"
               style={{ transitionDelay: isVisible ? `${index * 100}ms` : "0ms" }}
             >
               <div
@@ -130,7 +133,7 @@ export function CryptoSection() {
                 </h3>
                 <p className="text-sm text-muted-foreground">{crypto.symbol}</p>
               </div>
-            </div>
+            </HudFrame>
           ))}
         </div>
       </div>

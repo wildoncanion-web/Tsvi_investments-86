@@ -2,6 +2,7 @@
 
 import { Button } from "@/components/ui/button"
 import { Check, Sparkles } from "lucide-react"
+import { HudFrame } from "./hud-frame"
 import Link from "next/link"
 import { useEffect, useRef, useState } from "react"
 
@@ -85,23 +86,22 @@ export function InvestmentPlans() {
 
         <div className="mt-12 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
           {plans.map((plan, index) => (
-            <div
+            <HudFrame
               key={plan.name}
               onMouseEnter={() => setHoveredPlan(plan.name)}
               onMouseLeave={() => setHoveredPlan(null)}
-              className={`relative flex flex-col rounded-2xl border transition-all duration-500 ${
-                plan.popular
-                  ? "border-primary bg-primary/5"
-                  : hoveredPlan === plan.name
-                    ? "border-primary/50 bg-card"
-                    : "border-border bg-card"
-              } p-6 ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"} ${
-                hoveredPlan === plan.name ? "-translate-y-2 shadow-2xl shadow-primary/20" : ""
+              active={hoveredPlan === plan.name}
+              variant={plan.popular ? "highlight" : "default"}
+              fill={plan.popular ? "color-mix(in oklab, var(--primary) 6%, var(--card))" : "var(--card)"}
+              showTab={!plan.popular}
+              className={`transition-all duration-500 ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"} ${
+                hoveredPlan === plan.name ? "-translate-y-2" : ""
               }`}
+              contentClassName="flex flex-col p-6 pt-8"
               style={{ transitionDelay: isVisible ? `${index * 150}ms` : "0ms" }}
             >
               {plan.popular && (
-                <div className="absolute -top-3 left-1/2 -translate-x-1/2 flex items-center gap-1 rounded-full bg-primary px-3 py-1 text-xs font-semibold text-primary-foreground">
+                <div className="absolute -top-8 left-1/2 -translate-x-1/2 flex items-center gap-1 bg-primary px-4 py-1 text-xs font-semibold text-primary-foreground [clip-path:polygon(0_0,100%_0,calc(100%-8px)_100%,8px_100%)]">
                   <Sparkles className="h-3 w-3 animate-pulse" />
                   Most Popular
                 </div>
@@ -156,7 +156,7 @@ export function InvestmentPlans() {
                   Get Started
                 </Button>
               </Link>
-            </div>
+            </HudFrame>
           ))}
         </div>
       </div>

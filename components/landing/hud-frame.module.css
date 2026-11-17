@@ -1,0 +1,96 @@
+.frame {
+  --cut: 18px;
+  --stroke: 1.5px;
+  --frame-color: color-mix(in oklab, var(--primary) 55%, transparent);
+  --frame-fill: var(--card);
+  position: relative;
+  isolation: isolate;
+  transition: filter 300ms ease;
+}
+
+.frame[data-active="true"] {
+  --frame-color: var(--primary);
+  filter: drop-shadow(0 10px 24px color-mix(in oklab, var(--primary) 22%, transparent));
+}
+
+.frame[data-variant="highlight"] {
+  --frame-color: var(--primary);
+}
+
+.edge,
+.fill {
+  position: absolute;
+  z-index: -1;
+  pointer-events: none;
+  clip-path: polygon(
+    var(--cut) 0,
+    100% 0,
+    100% calc(100% - var(--cut)),
+    calc(100% - var(--cut)) 100%,
+    0 100%,
+    0 var(--cut)
+  );
+}
+
+.edge {
+  inset: 0;
+  background: var(--frame-color);
+  transition: background 300ms ease;
+}
+
+.fill {
+  inset: var(--stroke);
+  --cut: 17.4px;
+  background: var(--frame-fill);
+}
+
+/* Thin inner guide line on the left and bottom, echoing the reference frames */
+.inner {
+  position: absolute;
+  z-index: -1;
+  pointer-events: none;
+  inset: 9px;
+  top: calc(var(--cut) + 6px);
+  right: calc(var(--cut) + 6px);
+  border-left: 1px solid color-mix(in oklab, var(--frame-color) 60%, transparent);
+  border-bottom: 1px solid color-mix(in oklab, var(--frame-color) 60%, transparent);
+  transition: border-color 300ms ease;
+}
+
+/* Solid trapezoid tab on the top edge */
+.tab {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 28%;
+  max-width: 120px;
+  height: 6px;
+  transform: translateX(-50%);
+  background: var(--frame-color);
+  clip-path: polygon(0 0, 100% 0, calc(100% - 6px) 100%, 6px 100%);
+  pointer-events: none;
+  transition: background 300ms ease;
+}
+
+/* Segmented, slanted bars along the bottom edge */
+.bars {
+  position: absolute;
+  bottom: 0;
+  left: calc(var(--cut) + 8px);
+  width: 42%;
+  max-width: 180px;
+  height: 6px;
+  background: repeating-linear-gradient(
+    115deg,
+    var(--frame-color) 0 18px,
+    transparent 18px 24px
+  );
+  clip-path: polygon(6px 0, 100% 0, calc(100% - 6px) 100%, 0 100%);
+  pointer-events: none;
+  transition: background 300ms ease;
+}
+
+.content {
+  position: relative;
+  height: 100%;
+}
