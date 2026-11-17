@@ -96,18 +96,21 @@ export function CryptoSection() {
   }, [])
 
   return (
-    <section ref={sectionRef} className="border-y border-border bg-card py-20">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+    <section ref={sectionRef} className="border-b border-border bg-card py-20">
+      <div className="mx-auto flex max-w-7xl flex-col gap-12 px-4 sm:px-6 lg:flex-row lg:items-center lg:gap-16 lg:px-8">
         <div
-          className={`text-center transition-all duration-700 ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}
+          className={`flex flex-col gap-4 lg:w-2/5 transition-all duration-700 ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}
         >
-          <h2 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl">Trade Top Cryptocurrencies</h2>
-          <p className="mt-4 text-lg text-muted-foreground">
-            Invest in the most trusted digital assets with competitive rates
+          <span className="text-sm font-semibold uppercase tracking-widest text-primary">Supported assets</span>
+          <h2 className="text-balance text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
+            Trade Top Cryptocurrencies
+          </h2>
+          <p className="text-pretty text-lg leading-relaxed text-muted-foreground">
+            Invest in the most trusted digital assets with competitive rates, all from one secure wallet.
           </p>
         </div>
 
-        <div className="mt-12 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6">
+        <div className="grid flex-1 grid-cols-2 gap-4 sm:grid-cols-3">
           {cryptos.map((crypto, index) => (
             <div
               key={crypto.symbol}

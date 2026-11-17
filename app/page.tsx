@@ -15,8 +15,8 @@ export default function HomePage() {
         <HeroSection />
         <PriceTicker />
         <CryptoSection />
-        <InvestmentPlans />
         <Testimonials />
+        <InvestmentPlans />
         <CTASection />
       </main>
       <Footer />

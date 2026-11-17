@@ -54,24 +54,26 @@ export function Testimonials() {
   }, [])
 
   return (
-    <section ref={sectionRef} className="border-t border-border bg-card py-20">
+    <section ref={sectionRef} className="py-20">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div
-          className={`text-center transition-all duration-700 ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}
+          className={`flex flex-col gap-4 md:flex-row md:items-end md:justify-between transition-all duration-700 ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}
         >
-          <h2 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
+          <h2 className="max-w-md text-balance text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
             Trusted by Investors Worldwide
           </h2>
-          <p className="mt-4 text-lg text-muted-foreground">See what our investors have to say</p>
+          <p className="text-lg text-muted-foreground">See what our investors have to say</p>
         </div>
 
-        <div className="mt-12 grid grid-cols-1 gap-8 md:grid-cols-3">
+        <div className="mt-12 grid grid-cols-1 gap-6 md:grid-cols-2 md:grid-rows-2">
           {testimonials.map((testimonial, index) => (
             <div
               key={testimonial.name}
               onMouseEnter={() => setHoveredIndex(index)}
               onMouseLeave={() => setHoveredIndex(null)}
               className={`relative flex flex-col rounded-2xl border border-border bg-secondary/50 p-6 transition-all duration-500 ${
+                index === 0 ? "md:row-span-2 md:p-10 md:text-lg" : ""
+              } ${
                 isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
               } ${hoveredIndex === index ? "-translate-y-2 border-primary/50 shadow-xl shadow-primary/10" : ""}`}
               style={{ transitionDelay: isVisible ? `${index * 150}ms` : "0ms" }}
@@ -97,7 +99,9 @@ export function Testimonials() {
               </div>
 
               <p
-                className={`flex-1 text-muted-foreground transition-colors duration-300 ${
+                className={`flex-1 text-pretty leading-relaxed text-muted-foreground transition-colors duration-300 ${
+                  index === 0 ? "text-xl md:text-3xl md:leading-snug" : ""
+                } ${
                   hoveredIndex === index ? "text-foreground/90" : ""
                 }`}
               >
