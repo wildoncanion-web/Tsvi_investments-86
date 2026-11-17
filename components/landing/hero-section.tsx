@@ -32,7 +32,10 @@ export function HeroSection() {
           <h1 className="animate-slide-up animation-delay-200 text-balance text-4xl font-bold tracking-tight text-foreground sm:text-6xl lg:text-7xl">
             Finance without
             <br />
-            <span className="animate-shimmer bg-gradient-to-r from-primary via-accent to-primary bg-[length:200%_100%] bg-clip-text text-transparent">
+            <span
+    className="bg-gradient-to-r from-primary via-accent to-primary bg-[length:200%_100%] bg-clip-text text-transparent"
+    style={{ animation: "shimmer 3s linear infinite" }}
+  >
               the middleman.
             </span>
           </h1>
