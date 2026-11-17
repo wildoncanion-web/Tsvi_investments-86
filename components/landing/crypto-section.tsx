@@ -2,6 +2,7 @@
 
 import { Bitcoin } from "lucide-react"
 import { HudFrame } from "./hud-frame"
+import { SectionEyebrow } from "./section-eyebrow"
 import { useEffect, useRef, useState } from "react"
 
 const cryptos = [
@@ -97,21 +98,52 @@ export function CryptoSection() {
   }, [])
 
   return (
-    <section ref={sectionRef} className="border-b border-border bg-card py-20">
-      <div className="mx-auto flex max-w-7xl flex-col gap-12 px-4 sm:px-6 lg:flex-row lg:items-center lg:gap-16 lg:px-8">
+    <section ref={sectionRef} className="border-b border-border bg-card py-14 md:py-20">
+      <div className="mx-auto flex max-w-7xl flex-col gap-8 px-4 sm:px-6 md:gap-12 lg:flex-row lg:items-center lg:gap-16 lg:px-8">
         <div
           className={`flex flex-col gap-4 lg:w-2/5 transition-all duration-700 ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}
         >
-          <span className="text-sm font-semibold uppercase tracking-widest text-primary">Supported assets</span>
+          <SectionEyebrow>Supported assets</SectionEyebrow>
           <h2 className="text-balance text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
             Trade Top Cryptocurrencies
           </h2>
-          <p className="text-pretty text-lg leading-relaxed text-muted-foreground">
+          <p className="text-pretty text-base leading-relaxed text-muted-foreground sm:text-lg">
             Invest in the most trusted digital assets with competitive rates, all from one secure wallet.
           </p>
         </div>
 
-        <div className="grid flex-1 grid-cols-2 gap-4 sm:grid-cols-3">
+        <HudFrame
+          fill="var(--secondary)"
+          className={`sm:hidden transition-all duration-700 ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}
+          contentClassName="flex flex-col px-4 pt-5 pb-7"
+          style={{ transitionDelay: isVisible ? "150ms" : "0ms" }}
+        >
+          <div className="flex items-center justify-between border-b border-border pb-3 font-mono text-[11px] uppercase tracking-[0.2em] text-muted-foreground">
+            <span>Asset</span>
+            <span>Ticker</span>
+          </div>
+          <ul className="flex flex-col">
+            {cryptos.map((crypto, index) => (
+              <li
+                key={crypto.symbol}
+                className={`flex items-center gap-3 border-b border-border/60 py-3 last:border-b-0 transition-all duration-500 ${
+                  isVisible ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-4"
+                }`}
+                style={{ transitionDelay: isVisible ? `${200 + index * 70}ms` : "0ms" }}
+              >
+                <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-lg ${crypto.bgColor}`}>
+                  <crypto.icon className={`h-5 w-5 ${crypto.color}`} />
+                </div>
+                <span className="flex-1 font-semibold text-foreground">{crypto.name}</span>
+                <span className="border border-primary/40 px-2 py-0.5 font-mono text-xs font-semibold text-primary [clip-path:polygon(6px_0,100%_0,100%_calc(100%-6px),calc(100%-6px)_100%,0_100%,0_6px)]">
+                  {crypto.symbol}
+                </span>
+              </li>
+            ))}
+          </ul>
+        </HudFrame>
+
+        <div className="hidden flex-1 grid-cols-3 gap-4 sm:grid">
           {cryptos.map((crypto, index) => (
             <HudFrame
               key={crypto.symbol}

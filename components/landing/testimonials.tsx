@@ -3,6 +3,8 @@
 import Image from "next/image"
 import { Star, Quote } from "lucide-react"
 import { HudFrame } from "./hud-frame"
+import { SectionEyebrow } from "./section-eyebrow"
+import { useSnapCarousel } from "./use-snap-carousel"
 import { useEffect, useRef, useState } from "react"
 
 const testimonials = [
@@ -36,6 +38,7 @@ export function Testimonials() {
   const [isVisible, setIsVisible] = useState(false)
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null)
   const sectionRef = useRef<HTMLDivElement>(null)
+  const carousel = useSnapCarousel<HTMLDivElement>()
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -55,26 +58,33 @@ export function Testimonials() {
   }, [])
 
   return (
-    <section ref={sectionRef} className="py-20">
+    <section ref={sectionRef} className="py-14 md:py-20">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div
           className={`flex flex-col gap-4 md:flex-row md:items-end md:justify-between transition-all duration-700 ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}
         >
-          <h2 className="max-w-md text-balance text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
-            Trusted by Investors Worldwide
-          </h2>
-          <p className="text-lg text-muted-foreground">See what our investors have to say</p>
+          <div className="flex flex-col gap-4">
+            <SectionEyebrow>Investor stories</SectionEyebrow>
+            <h2 className="max-w-md text-balance text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
+              Trusted by Investors Worldwide
+            </h2>
+          </div>
+          <p className="text-base text-muted-foreground sm:text-lg">See what our investors have to say</p>
         </div>
 
-        <div className="mt-12 grid grid-cols-1 gap-6 md:grid-cols-2 md:grid-rows-2">
+        <div
+          ref={carousel.ref}
+          onScroll={carousel.onScroll}
+          className="relative -mx-4 mt-8 flex snap-x snap-mandatory gap-4 overflow-x-auto px-4 pt-2 pb-4 [scrollbar-width:none] md:mx-0 md:mt-12 md:grid md:grid-cols-2 md:grid-rows-2 md:gap-6 md:overflow-visible md:p-0"
+        >
           {testimonials.map((testimonial, index) => (
             <HudFrame
               key={testimonial.name}
               onMouseEnter={() => setHoveredIndex(index)}
               onMouseLeave={() => setHoveredIndex(null)}
-              active={hoveredIndex === index}
+              active={hoveredIndex === index || carousel.activeIndex === index}
               fill="var(--secondary)"
-              className={`transition-all duration-500 ${index === 0 ? "md:row-span-2" : ""} ${
+              className={`w-[86%] shrink-0 snap-center md:w-auto transition-all duration-500 ${index === 0 ? "md:row-span-2" : ""} ${
                 isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
               } ${hoveredIndex === index ? "-translate-y-2" : ""}`}
               contentClassName={`flex flex-col p-6 ${index === 0 ? "md:p-10 md:text-lg" : ""}`}
@@ -133,6 +143,27 @@ export function Testimonials() {
               </div>
             </HudFrame>
           ))}
+        </div>
+
+        <div className="mt-4 flex items-center justify-between md:hidden">
+          <span className="font-mono text-xs tracking-[0.2em] text-muted-foreground">
+            <span className="text-primary">{String(carousel.activeIndex + 1).padStart(2, "0")}</span>
+            {` / ${String(testimonials.length).padStart(2, "0")}`}
+          </span>
+          <div className="flex items-center gap-2">
+            {testimonials.map((testimonial, index) => (
+              <button
+                key={testimonial.name}
+                type="button"
+                onClick={() => carousel.scrollTo(index)}
+                aria-label={`Show review from ${testimonial.name}`}
+                aria-current={carousel.activeIndex === index}
+                className={`h-1.5 transition-all duration-300 ${
+                  carousel.activeIndex === index ? "w-8 bg-primary" : "w-3 bg-primary/30"
+                }`}
+              />
+            ))}
+          </div>
         </div>
       </div>
     </section>
