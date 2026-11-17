@@ -81,10 +81,11 @@ export function InvestmentPlans() {
           className={`text-center transition-all duration-700 ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}
         >
           <h2 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl">Investment Plans</h2>
-          <p className="mt-4 text-lg text-muted-foreground">Choose a plan that fits your investment goals</p>
+          <p className="mt-4 text-pretty text-lg text-muted-foreground">Choose a plan that fits your investment goals</p>
+          <p className="mt-2 text-sm text-primary md:hidden">{"Swipe to compare plans \u2192"}</p>
         </div>
 
-        <div className="mt-12 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
+        <div className="-mx-4 mt-2 flex snap-x snap-mandatory gap-4 overflow-x-auto px-4 pt-10 pb-4 [scrollbar-width:none] md:mx-0 md:mt-4 md:grid md:grid-cols-2 md:gap-6 md:overflow-visible md:px-0 md:pb-0 lg:grid-cols-4">
           {plans.map((plan, index) => (
             <HudFrame
               key={plan.name}
@@ -94,7 +95,7 @@ export function InvestmentPlans() {
               variant={plan.popular ? "highlight" : "default"}
               fill={plan.popular ? "color-mix(in oklab, var(--primary) 6%, var(--card))" : "var(--card)"}
               showTab={!plan.popular}
-              className={`transition-all duration-500 ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"} ${
+              className={`w-4/5 shrink-0 snap-center sm:w-3/5 md:w-auto transition-all duration-500 ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"} ${
                 hoveredPlan === plan.name ? "-translate-y-2" : ""
               }`}
               contentClassName="flex flex-col p-6 pt-8"

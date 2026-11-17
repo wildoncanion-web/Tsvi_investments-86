@@ -119,7 +119,7 @@ export function CryptoSection() {
               className={`group cursor-pointer transition-all duration-500 hover:-translate-y-2 hover:[--frame-color:var(--primary)] ${
                 isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
               }`}
-              contentClassName="flex flex-col items-center gap-4 p-6"
+              contentClassName="flex flex-col items-center gap-3 p-4 sm:gap-4 sm:p-6"
               style={{ transitionDelay: isVisible ? `${index * 100}ms` : "0ms" }}
             >
               <div

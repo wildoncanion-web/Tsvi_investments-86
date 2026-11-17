@@ -102,7 +102,7 @@ export function Testimonials() {
 
               <p
                 className={`flex-1 text-pretty leading-relaxed text-muted-foreground transition-colors duration-300 ${
-                  index === 0 ? "text-xl md:text-3xl md:leading-snug" : ""
+                  index === 0 ? "text-lg sm:text-xl md:text-3xl md:leading-snug" : ""
                 } ${
                   hoveredIndex === index ? "text-foreground/90" : ""
                 }`}
