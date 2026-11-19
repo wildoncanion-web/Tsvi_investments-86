@@ -40,12 +40,12 @@ export function CTASection() {
   }
 
   return (
-    <section ref={sectionRef} className="py-20">
+    <section ref={sectionRef} className="py-14 md:py-20">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div
           ref={cardRef}
           onMouseMove={handleMouseMove}
-          className={`relative overflow-hidden rounded-3xl bg-primary px-8 py-16 text-center sm:px-16 transition-all duration-700 ${
+          className={`relative overflow-hidden rounded-3xl bg-primary px-6 py-12 text-center sm:px-16 sm:py-16 transition-all duration-700 ${
             isVisible ? "opacity-100 translate-y-0 scale-100" : "opacity-0 translate-y-8 scale-95"
           }`}
           style={{
@@ -87,11 +87,11 @@ export function CTASection() {
               }`}
               style={{ transitionDelay: "500ms" }}
             >
-              <Link href="/register">
+              <Link href="/register" className="block sm:inline-block">
                 <Button
                   size="lg"
                   variant="secondary"
-                  className="gap-2 transition-all duration-300 hover:scale-105 hover:shadow-xl"
+                  className="w-full gap-2 transition-all duration-300 hover:scale-105 hover:shadow-xl sm:w-auto"
                 >
                   Create Free Account <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
                 </Button>

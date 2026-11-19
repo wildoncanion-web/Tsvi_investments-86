@@ -64,7 +64,7 @@ export function Footer() {
           </div>
         </div>
 
-        <div className="mt-12 border-t border-border pt-8">
+        <div className="mt-12 border-t border-border pt-8 pb-16 md:pb-0">
           <p className="text-center text-sm text-muted-foreground">
             &copy; {new Date().getFullYear()} TSVI Investments. All rights reserved.
           </p>

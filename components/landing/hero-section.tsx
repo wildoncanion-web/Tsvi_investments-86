@@ -3,13 +3,12 @@
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { ArrowRight, Shield, TrendingUp, Zap } from "lucide-react"
-import { FloatingCoins } from "./floating-coins"
+import { SpinningCoin } from "./spinning-coin"
 import { AnimatedCounter } from "./animated-counter"
 
 export function HeroSection() {
   return (
     <section className="relative overflow-hidden pt-32 pb-20">
-      <FloatingCoins />
 
       {/* Background Elements with pulse animation */}
       <div className="absolute inset-0 -z-10">
@@ -19,6 +18,10 @@ export function HeroSection() {
 
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-4xl text-center">
+          <div className="animate-scale-in mb-16 flex justify-center">
+            <SpinningCoin />
+          </div>
+
           <div className="animate-slide-up mb-6 inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/10 px-4 py-2">
             <span className="h-2 w-2 animate-pulse rounded-full bg-primary" />
             <span className="text-sm text-primary">
@@ -29,7 +32,10 @@ export function HeroSection() {
           <h1 className="animate-slide-up animation-delay-200 text-balance text-4xl font-bold tracking-tight text-foreground sm:text-6xl lg:text-7xl">
             Finance without
             <br />
-            <span className="animate-shimmer bg-gradient-to-r from-primary via-accent to-primary bg-[length:200%_100%] bg-clip-text text-transparent">
+            <span
+    className="bg-gradient-to-r from-primary via-accent to-primary bg-[length:200%_100%] bg-clip-text text-transparent"
+    style={{ animation: "shimmer 3s linear infinite" }}
+  >
               the middleman.
             </span>
           </h1>

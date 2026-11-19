@@ -3,77 +3,80 @@
 
 @custom-variant dark (&:is(.dark *));
 
-/* Updated to dark theme with emerald primary and amber accent for crypto platform */
+/* Rebrand: Deep Forest and Gold.
+   #072623 page, #0F3D3A cards, #F4B13B gold primary, #14524D secondary,
+   #3FB5A8 aqua accent, #F2E6D6 sand text, #F0524F losses only.
+   Added neutrals: #0B312E muted surfaces, #A8BDB6 muted text, #1D5550 input borders. */
 :root {
-  --background: oklch(0.12 0.01 260);
-  --foreground: oklch(0.98 0 0);
-  --card: oklch(0.16 0.01 260);
-  --card-foreground: oklch(0.98 0 0);
-  --popover: oklch(0.16 0.01 260);
-  --popover-foreground: oklch(0.98 0 0);
-  --primary: oklch(0.7 0.17 162);
-  --primary-foreground: oklch(0.12 0.01 260);
-  --secondary: oklch(0.2 0.01 260);
-  --secondary-foreground: oklch(0.98 0 0);
-  --muted: oklch(0.25 0.01 260);
-  --muted-foreground: oklch(0.65 0.01 260);
-  --accent: oklch(0.75 0.15 85);
-  --accent-foreground: oklch(0.12 0.01 260);
-  --destructive: oklch(0.55 0.22 27);
-  --destructive-foreground: oklch(0.98 0 0);
-  --border: oklch(0.28 0.01 260);
-  --input: oklch(0.22 0.01 260);
-  --ring: oklch(0.7 0.17 162);
-  --chart-1: oklch(0.7 0.17 162);
-  --chart-2: oklch(0.75 0.15 85);
-  --chart-3: oklch(0.65 0.15 250);
-  --chart-4: oklch(0.7 0.2 35);
-  --chart-5: oklch(0.65 0.18 200);
+  --background: #072623;
+  --foreground: #f2e6d6;
+  --card: #0f3d3a;
+  --card-foreground: #f2e6d6;
+  --popover: #0f3d3a;
+  --popover-foreground: #f2e6d6;
+  --primary: #f4b13b;
+  --primary-foreground: #072623;
+  --secondary: #14524d;
+  --secondary-foreground: #f2e6d6;
+  --muted: #0b312e;
+  --muted-foreground: #a8bdb6;
+  --accent: #3fb5a8;
+  --accent-foreground: #072623;
+  --destructive: #f0524f;
+  --destructive-foreground: #072623;
+  --border: rgb(242 230 214 / 0.14);
+  --input: #1d5550;
+  --ring: #f4b13b;
+  --chart-1: #f4b13b;
+  --chart-2: #3fb5a8;
+  --chart-3: #e0745e;
+  --chart-4: #a8bdb6;
+  --chart-5: #f2e6d6;
   --radius: 0.625rem;
-  --sidebar: oklch(0.14 0.01 260);
-  --sidebar-foreground: oklch(0.98 0 0);
-  --sidebar-primary: oklch(0.7 0.17 162);
-  --sidebar-primary-foreground: oklch(0.12 0.01 260);
-  --sidebar-accent: oklch(0.2 0.01 260);
-  --sidebar-accent-foreground: oklch(0.98 0 0);
-  --sidebar-border: oklch(0.28 0.01 260);
-  --sidebar-ring: oklch(0.7 0.17 162);
+  --sidebar: #0b312e;
+  --sidebar-foreground: #f2e6d6;
+  --sidebar-primary: #f4b13b;
+  --sidebar-primary-foreground: #072623;
+  --sidebar-accent: #14524d;
+  --sidebar-accent-foreground: #f2e6d6;
+  --sidebar-border: rgb(242 230 214 / 0.14);
+  --sidebar-ring: #f4b13b;
 }
 
 /* Dark class inherits root since we're dark by default */
 .dark {
-  --background: oklch(0.12 0.01 260);
-  --foreground: oklch(0.98 0 0);
-  --card: oklch(0.16 0.01 260);
-  --card-foreground: oklch(0.98 0 0);
-  --popover: oklch(0.16 0.01 260);
-  --popover-foreground: oklch(0.98 0 0);
-  --primary: oklch(0.7 0.17 162);
-  --primary-foreground: oklch(0.12 0.01 260);
-  --secondary: oklch(0.2 0.01 260);
-  --secondary-foreground: oklch(0.98 0 0);
-  --muted: oklch(0.25 0.01 260);
-  --muted-foreground: oklch(0.65 0.01 260);
-  --accent: oklch(0.75 0.15 85);
-  --accent-foreground: oklch(0.12 0.01 260);
-  --destructive: oklch(0.55 0.22 27);
-  --destructive-foreground: oklch(0.98 0 0);
-  --border: oklch(0.28 0.01 260);
-  --input: oklch(0.22 0.01 260);
-  --ring: oklch(0.7 0.17 162);
-  --chart-1: oklch(0.7 0.17 162);
-  --chart-2: oklch(0.75 0.15 85);
-  --chart-3: oklch(0.65 0.15 250);
-  --chart-4: oklch(0.7 0.2 35);
-  --chart-5: oklch(0.65 0.18 200);
-  --sidebar: oklch(0.14 0.01 260);
-  --sidebar-foreground: oklch(0.98 0 0);
-  --sidebar-primary: oklch(0.7 0.17 162);
-  --sidebar-primary-foreground: oklch(0.12 0.01 260);
-  --sidebar-accent: oklch(0.2 0.01 260);
-  --sidebar-accent-foreground: oklch(0.98 0 0);
-  --sidebar-border: oklch(0.28 0.01 260);
-  --sidebar-ring: oklch(0.7 0.17 162);
+  --background: #072623;
+  --foreground: #f2e6d6;
+  --card: #0f3d3a;
+  --card-foreground: #f2e6d6;
+  --popover: #0f3d3a;
+  --popover-foreground: #f2e6d6;
+  --primary: #f4b13b;
+  --primary-foreground: #072623;
+  --secondary: #14524d;
+  --secondary-foreground: #f2e6d6;
+  --muted: #0b312e;
+  --muted-foreground: #a8bdb6;
+  --accent: #3fb5a8;
+  --accent-foreground: #072623;
+  --destructive: #f0524f;
+  --destructive-foreground: #072623;
+  --border: rgb(242 230 214 / 0.14);
+  --input: #1d5550;
+  --ring: #f4b13b;
+  --chart-1: #f4b13b;
+  --chart-2: #3fb5a8;
+  --chart-3: #e0745e;
+  --chart-4: #a8bdb6;
+  --chart-5: #f2e6d6;
+  --sidebar: #0b312e;
+  --sidebar-foreground: #f2e6d6;
+  --sidebar-primary: #f4b13b;
+  --sidebar-primary-foreground: #072623;
+  --sidebar-accent: #14524d;
+  --sidebar-accent-foreground: #f2e6d6;
+  --sidebar-border: rgb(242 230 214 / 0.14);
+  --sidebar-ring: #f4b13b;
 }
 
 @theme inline {
@@ -221,9 +224,8 @@
 }
 
 .animate-shimmer {
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
   background-size: 200% 100%;
-  animation: shimmer 3s infinite;
+  animation: shimmer 3s linear infinite;
 }
 
 .animate-slide-up {

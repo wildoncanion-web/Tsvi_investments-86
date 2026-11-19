@@ -2,6 +2,9 @@
 
 import { Button } from "@/components/ui/button"
 import { Check, Sparkles } from "lucide-react"
+import { HudFrame } from "./hud-frame"
+import { SectionEyebrow } from "./section-eyebrow"
+import { useSnapCarousel } from "./use-snap-carousel"
 import Link from "next/link"
 import { useEffect, useRef, useState } from "react"
 
@@ -55,6 +58,7 @@ export function InvestmentPlans() {
   const [isVisible, setIsVisible] = useState(false)
   const [hoveredPlan, setHoveredPlan] = useState<string | null>(null)
   const sectionRef = useRef<HTMLDivElement>(null)
+  const carousel = useSnapCarousel<HTMLDivElement>()
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -74,34 +78,74 @@ export function InvestmentPlans() {
   }, [])
 
   return (
-    <section ref={sectionRef} className="py-20">
+    <section ref={sectionRef} className="border-y border-border bg-card py-14 md:py-20">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div
-          className={`text-center transition-all duration-700 ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}
+          className={`flex flex-col items-start gap-4 md:items-center md:text-center transition-all duration-700 ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}
         >
+          <SectionEyebrow>Plans</SectionEyebrow>
           <h2 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl">Investment Plans</h2>
-          <p className="mt-4 text-lg text-muted-foreground">Choose a plan that fits your investment goals</p>
+          <p className="text-pretty text-base text-muted-foreground sm:text-lg">
+            Choose a plan that fits your investment goals
+          </p>
         </div>
 
-        <div className="mt-12 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
+        <div
+          role="group"
+          aria-label="Jump to plan"
+          className="mt-8 grid grid-cols-4 border border-border bg-background/40 md:hidden"
+        >
+          {plans.map((plan, index) => {
+            const isActive = carousel.activeIndex === index
+            return (
+              <button
+                key={plan.name}
+                type="button"
+                onClick={() => carousel.scrollTo(index)}
+                aria-pressed={isActive}
+                className={`relative flex flex-col items-center gap-0.5 border-r border-border py-2.5 last:border-r-0 transition-colors duration-300 ${
+                  isActive ? "bg-primary/10" : ""
+                }`}
+              >
+                <span className={`text-xs font-semibold ${isActive ? "text-foreground" : "text-muted-foreground"}`}>
+                  {plan.name}
+                </span>
+                <span className={`font-mono text-sm font-bold ${isActive ? "text-primary" : "text-muted-foreground"}`}>
+                  {plan.roi}
+                </span>
+                <span
+                  aria-hidden="true"
+                  className={`absolute inset-x-0 bottom-0 h-0.5 bg-primary transition-transform duration-300 ${
+                    isActive ? "scale-x-100" : "scale-x-0"
+                  }`}
+                />
+              </button>
+            )
+          })}
+        </div>
+
+        <div
+          ref={carousel.ref}
+          onScroll={carousel.onScroll}
+          className="relative -mx-4 flex snap-x snap-mandatory gap-4 overflow-x-auto px-4 pt-10 pb-4 [scrollbar-width:none] md:mx-0 md:mt-4 md:grid md:grid-cols-2 md:gap-6 md:overflow-visible md:px-0 md:pb-0 lg:grid-cols-4"
+        >
           {plans.map((plan, index) => (
-            <div
+            <HudFrame
               key={plan.name}
               onMouseEnter={() => setHoveredPlan(plan.name)}
               onMouseLeave={() => setHoveredPlan(null)}
-              className={`relative flex flex-col rounded-2xl border transition-all duration-500 ${
-                plan.popular
-                  ? "border-primary bg-primary/5"
-                  : hoveredPlan === plan.name
-                    ? "border-primary/50 bg-card"
-                    : "border-border bg-card"
-              } p-6 ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"} ${
-                hoveredPlan === plan.name ? "-translate-y-2 shadow-2xl shadow-primary/20" : ""
+              active={hoveredPlan === plan.name}
+              variant={plan.popular ? "highlight" : "default"}
+              fill={plan.popular ? "color-mix(in oklab, var(--primary) 6%, var(--card))" : "var(--card)"}
+              showTab={!plan.popular}
+              className={`w-4/5 shrink-0 snap-center sm:w-3/5 md:w-auto transition-all duration-500 ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"} ${
+                hoveredPlan === plan.name ? "-translate-y-2" : ""
               }`}
+              contentClassName="flex flex-col p-6 pt-8"
               style={{ transitionDelay: isVisible ? `${index * 150}ms` : "0ms" }}
             >
               {plan.popular && (
-                <div className="absolute -top-3 left-1/2 -translate-x-1/2 flex items-center gap-1 rounded-full bg-primary px-3 py-1 text-xs font-semibold text-primary-foreground">
+                <div className="absolute -top-8 left-1/2 -translate-x-1/2 flex items-center gap-1 bg-primary px-4 py-1 text-xs font-semibold text-primary-foreground [clip-path:polygon(0_0,100%_0,calc(100%-8px)_100%,8px_100%)]">
                   <Sparkles className="h-3 w-3 animate-pulse" />
                   Most Popular
                 </div>
@@ -156,7 +200,7 @@ export function InvestmentPlans() {
                   Get Started
                 </Button>
               </Link>
-            </div>
+            </HudFrame>
           ))}
         </div>
       </div>
